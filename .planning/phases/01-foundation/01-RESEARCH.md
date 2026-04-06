@@ -608,22 +608,25 @@ await boss.sendAfter('send-email', { leadId: '...' }, {}, 5 * 24 * 60 * 60) // 5
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Is Docker available for local Supabase dev?**
    - What we know: Supabase CLI's `supabase start` requires Docker
    - What's unclear: Whether the development machine has Docker installed
    - Recommendation: Check with `docker info` before writing tasks that use local Supabase. If not available, write tasks against remote Supabase project directly.
+   - **RESOLVED:** Plan 01-04 targets the remote Supabase project directly via `supabase db push`. Docker is not required; local Supabase (`supabase start`) is skipped entirely.
 
 2. **Has the Google Workspace account been created?**
    - What we know: Gmail warmup is on the critical path for Phase 4; must start in Phase 1
    - What's unclear: Current status of the Google Workspace account
    - Recommendation: Include an explicit task in the plan: "Create Google Workspace account with custom domain and start warmup protocol." This is not optional — it gates Phase 4.
+   - **RESOLVED:** Plan 01-04 Task 2 includes a `checkpoint:human-action` task instructing the user to create the Google Workspace account and begin the warmup protocol before Phase 4 is unblocked.
 
 3. **Direct vs Session mode connection string for Supabase**
    - What we know: Supabase provides multiple connection strings: direct (port 5432), transaction pooler (port 6543 via PgBouncer), session pooler (port 5432 via Supavisor)
    - What's unclear: Which string is labeled "direct" in the current Supabase dashboard UI
    - Recommendation: In the plan, explicitly call out: use the connection string from Settings > Database > "Direct connection" section, not "Connection pooling" section.
+   - **RESOLVED:** Plan 01-02 Task 2 specifies the direct connection string (Settings > Database > "Direct connection", port 5432) and the `getBoss()` error message explicitly names the pooler as incorrect. `DATABASE_URL` in `.env.local` must use the direct URL (not the transaction pooler).
 
 ---
 
