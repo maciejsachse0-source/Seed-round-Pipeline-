@@ -52,7 +52,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **INFR-02**: Lead state machine z walidacją przejść stanów
 - [x] **INFR-03**: Job queue (pg-boss) do schedulowania scrape jobs, email sends, follow-upów
 - [x] **INFR-04**: Pole lawful_basis w schemacie DB od dnia 1 (RODO compliance)
-- [ ] **INFR-05**: Next.js app z Server Components i Server Actions
+- [x] **INFR-05**: Next.js app z Server Components i Server Actions
 
 ## v2 Requirements
 
@@ -96,7 +96,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INFR-02 | Phase 1: Foundation | Complete |
 | INFR-03 | Phase 1: Foundation | Complete |
 | INFR-04 | Phase 1: Foundation | Complete |
-| INFR-05 | Phase 1: Foundation | Pending |
+| INFR-05 | Phase 1: Foundation | Complete |
 | MAIL-07 | Phase 1: Foundation | Complete |
 | MAIL-08 | Phase 1: Foundation | Complete |
 | SCRP-01 | Phase 2: OLX Scraper + Data Processing | Pending |
