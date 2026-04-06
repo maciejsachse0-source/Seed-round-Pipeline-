@@ -11,7 +11,7 @@ vi.mock('pg-boss', () => {
     send = vi.fn().mockResolvedValue('mock-job-id')
     work = vi.fn().mockResolvedValue(undefined)
   }
-  return { default: MockPgBoss }
+  return { default: MockPgBoss, PgBoss: MockPgBoss }
 })
 
 // Reset the singleton between tests
