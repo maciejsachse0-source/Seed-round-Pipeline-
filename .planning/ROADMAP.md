@@ -28,7 +28,13 @@
   3. The pg-boss job queue starts and processes a test job without error
   4. The Next.js app boots locally and connects to Supabase
   5. The suppression list table exists and is checked before any send pathway (opt-out infrastructure ready before first email)
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [x] 01-01-PLAN.md — Supabase migration (5 tables, GDPR fields) + suppression list helper + Vitest setup
+- [ ] 01-02-PLAN.md — Lead state machine (9 statuses, validated transitions) + pg-boss singleton + instrumentation.ts
+- [ ] 01-03-PLAN.md — Next.js app scaffold + Supabase SSR/browser clients + dashboard shell + env config
+- [ ] 01-04-PLAN.md — [BLOCKING] supabase db push to live project + app verification + Gmail warmup checkpoint
 
 ### Phase 2: OLX Scraper + Data Processing
 **Goal**: Scraped handmade seller leads from OLX appear in the Supabase database — normalized, deduplicated, and scored — ready for human review.
@@ -97,7 +103,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/? | Not started | - |
+| 1. Foundation | 1/4 | In Progress|  |
 | 2. OLX Scraper + Data Processing | 0/? | Not started | - |
 | 3. Lead Management Dashboard | 0/? | Not started | - |
 | 4. Email Infrastructure | 0/? | Not started | - |
@@ -106,4 +112,4 @@
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-06 after initial creation*
+*Last updated: 2026-04-06 — Phase 1 plans created (4 plans, 3 waves)*

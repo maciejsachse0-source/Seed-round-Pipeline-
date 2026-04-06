@@ -33,8 +33,8 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **MAIL-04**: System wykrywa odpowiedzi przez Gmail API i auto-stopuje sekwencję follow-upów
 - [ ] **MAIL-05**: System śledzi otwarcia emaili (tracking pixel)
 - [ ] **MAIL-06**: System respektuje limity Gmail (cap 40-50 emaili/dzień, 60-120s przerwy między wysyłkami)
-- [ ] **MAIL-07**: Każdy email zawiera link opt-out/unsubscribe (wymóg RODO)
-- [ ] **MAIL-08**: System sprawdza suppression list przed każdą wysyłką
+- [x] **MAIL-07**: Każdy email zawiera link opt-out/unsubscribe (wymóg RODO)
+- [x] **MAIL-08**: System sprawdza suppression list przed każdą wysyłką
 
 ### Dashboard
 
@@ -48,10 +48,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Infrastructure
 
-- [ ] **INFR-01**: Baza danych na Supabase z pełnym schematem (leads, email_events, scrape_jobs, email_templates, suppression_list)
+- [x] **INFR-01**: Baza danych na Supabase z pełnym schematem (leads, email_events, scrape_jobs, email_templates, suppression_list)
 - [ ] **INFR-02**: Lead state machine z walidacją przejść stanów
 - [ ] **INFR-03**: Job queue (pg-boss) do schedulowania scrape jobs, email sends, follow-upów
-- [ ] **INFR-04**: Pole lawful_basis w schemacie DB od dnia 1 (RODO compliance)
+- [x] **INFR-04**: Pole lawful_basis w schemacie DB od dnia 1 (RODO compliance)
 - [ ] **INFR-05**: Next.js app z Server Components i Server Actions
 
 ## v2 Requirements
@@ -92,13 +92,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFR-01 | Phase 1: Foundation | Pending |
+| INFR-01 | Phase 1: Foundation | Complete |
 | INFR-02 | Phase 1: Foundation | Pending |
 | INFR-03 | Phase 1: Foundation | Pending |
-| INFR-04 | Phase 1: Foundation | Pending |
+| INFR-04 | Phase 1: Foundation | Complete |
 | INFR-05 | Phase 1: Foundation | Pending |
-| MAIL-07 | Phase 1: Foundation | Pending |
-| MAIL-08 | Phase 1: Foundation | Pending |
+| MAIL-07 | Phase 1: Foundation | Complete |
+| MAIL-08 | Phase 1: Foundation | Complete |
 | SCRP-01 | Phase 2: OLX Scraper + Data Processing | Pending |
 | SCRP-03 | Phase 2: OLX Scraper + Data Processing | Pending |
 | SCRP-04 | Phase 2: OLX Scraper + Data Processing | Pending |
