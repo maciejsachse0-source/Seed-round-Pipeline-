@@ -49,8 +49,8 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Infrastructure
 
 - [x] **INFR-01**: Baza danych na Supabase z pełnym schematem (leads, email_events, scrape_jobs, email_templates, suppression_list)
-- [ ] **INFR-02**: Lead state machine z walidacją przejść stanów
-- [ ] **INFR-03**: Job queue (pg-boss) do schedulowania scrape jobs, email sends, follow-upów
+- [x] **INFR-02**: Lead state machine z walidacją przejść stanów
+- [x] **INFR-03**: Job queue (pg-boss) do schedulowania scrape jobs, email sends, follow-upów
 - [x] **INFR-04**: Pole lawful_basis w schemacie DB od dnia 1 (RODO compliance)
 - [ ] **INFR-05**: Next.js app z Server Components i Server Actions
 
@@ -93,8 +93,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFR-01 | Phase 1: Foundation | Complete |
-| INFR-02 | Phase 1: Foundation | Pending |
-| INFR-03 | Phase 1: Foundation | Pending |
+| INFR-02 | Phase 1: Foundation | Complete |
+| INFR-03 | Phase 1: Foundation | Complete |
 | INFR-04 | Phase 1: Foundation | Complete |
 | INFR-05 | Phase 1: Foundation | Pending |
 | MAIL-07 | Phase 1: Foundation | Complete |

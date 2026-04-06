@@ -3,21 +3,21 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 1
-current_plan: 2
+current_plan: 3
 status: executing
-last_updated: "2026-04-06T09:46:00.000Z"
+last_updated: "2026-04-06T09:47:00.000Z"
 progress:
   total_phases: 6
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 25
+  completed_plans: 2
+  percent: 50
 ---
 
 # State: Seed Round Pipeline
 
 **Last updated:** 2026-04-06
-**Session:** Executing Phase 1 Plan 1
+**Session:** Executing Phase 1 Plan 3
 
 ---
 
@@ -32,17 +32,17 @@ progress:
 ## Current Position
 
 Phase: 1 (Foundation) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 **Milestone:** v1
 **Current Phase:** 1
-**Current Plan:** 2
+**Current Plan:** 3
 **Status:** Executing Phase 1
 
 **Progress:**
 
 ```
-[███░░░░░░░] 25% (1/4 plans complete)
-Phase 1: Foundation                          [1/4 plans] In progress
+[█████░░░░░] 50% (2/4 plans complete)
+Phase 1: Foundation                          [2/4 plans] In progress
 Phase 2: OLX Scraper + Data Processing      [ ] Not started
 Phase 3: Lead Management Dashboard          [ ] Not started
 Phase 4: Email Infrastructure               [ ] Not started
@@ -50,7 +50,7 @@ Phase 5: Follow-up Sequences               [ ] Not started
 Phase 6: Additional Scrapers + Enhancements [ ] Not started
 ```
 
-Overall: 0/6 phases complete (1/4 plans complete in Phase 1)
+Overall: 0/6 phases complete (2/4 plans complete in Phase 1)
 
 ---
 
@@ -62,13 +62,14 @@ Overall: 0/6 phases complete (1/4 plans complete in Phase 1)
 | Requirements mapped | 28 |
 | Phases planned | 6 |
 | Plans created | 4 |
-| Plans complete | 1 |
+| Plans complete | 2 |
 
 ### Execution Metrics
 
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 01-foundation P01 | 8 min | 2 tasks | 7 files |
+| Phase 01-foundation P02 | 8 min | 2 tasks | 5 files |
 
 ---
 
@@ -76,6 +77,7 @@ Overall: 0/6 phases complete (1/4 plans complete in Phase 1)
 
 ### Key Decisions Locked In
 
+- **Vitest 4.x mock class syntax:** Use `class MockX { ... }` not `vi.fn().mockImplementation(() => ({...}))` when mocking constructors — vi.fn() produces arrow functions, which cannot be used with `new`
 - **Schema-first:** lawful_basis, suppression_list, and state machine must exist from day 1 — cannot be retrofitted without GDPR exposure
 - **OLX before social scrapers:** Most accessible Polish platform; establishes adapter pattern before tackling unreliable Facebook/Instagram
 - **Dashboard before email:** Manual lead review is the quality gate protecting Gmail sender reputation
@@ -121,6 +123,7 @@ Overall: 0/6 phases complete (1/4 plans complete in Phase 1)
 - 2026-04-06: Roadmap created with 6 phases, 28 requirements mapped
 - 2026-04-06: STATE.md initialized
 - 2026-04-06: Executed Plan 01-01 — DB schema migration, TypeScript types, suppression helper, 4 tests passing. Commits: 53998d5, 5ea5de2
+- 2026-04-06: Executed Plan 01-02 — Lead state machine (25 tests), pg-boss singleton, instrumentation.ts. 32 total tests passing. Commits: c57c9ec, e413c0e, 552733c. Stopped at: Completed 01-foundation-02-PLAN.md
 
 ---
 *State initialized: 2026-04-06*

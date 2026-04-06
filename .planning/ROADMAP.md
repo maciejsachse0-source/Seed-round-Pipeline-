@@ -32,7 +32,7 @@
 
 Plans:
 - [x] 01-01-PLAN.md — Supabase migration (5 tables, GDPR fields) + suppression list helper + Vitest setup
-- [ ] 01-02-PLAN.md — Lead state machine (9 statuses, validated transitions) + pg-boss singleton + instrumentation.ts
+- [x] 01-02-PLAN.md — Lead state machine (9 statuses, validated transitions) + pg-boss singleton + instrumentation.ts
 - [ ] 01-03-PLAN.md — Next.js app scaffold + Supabase SSR/browser clients + dashboard shell + env config
 - [ ] 01-04-PLAN.md — [BLOCKING] supabase db push to live project + app verification + Gmail warmup checkpoint
 
@@ -103,7 +103,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/4 | In Progress|  |
+| 1. Foundation | 2/4 | In Progress|  |
 | 2. OLX Scraper + Data Processing | 0/? | Not started | - |
 | 3. Lead Management Dashboard | 0/? | Not started | - |
 | 4. Email Infrastructure | 0/? | Not started | - |
