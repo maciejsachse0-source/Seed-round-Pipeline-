@@ -92,13 +92,44 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (To be filled by roadmapper) | | |
+| INFR-01 | Phase 1: Foundation | Pending |
+| INFR-02 | Phase 1: Foundation | Pending |
+| INFR-03 | Phase 1: Foundation | Pending |
+| INFR-04 | Phase 1: Foundation | Pending |
+| INFR-05 | Phase 1: Foundation | Pending |
+| MAIL-07 | Phase 1: Foundation | Pending |
+| MAIL-08 | Phase 1: Foundation | Pending |
+| SCRP-01 | Phase 2: OLX Scraper + Data Processing | Pending |
+| SCRP-03 | Phase 2: OLX Scraper + Data Processing | Pending |
+| SCRP-04 | Phase 2: OLX Scraper + Data Processing | Pending |
+| SCRP-05 | Phase 2: OLX Scraper + Data Processing | Pending |
+| DATA-01 | Phase 2: OLX Scraper + Data Processing | Pending |
+| DATA-02 | Phase 2: OLX Scraper + Data Processing | Pending |
+| DATA-03 | Phase 2: OLX Scraper + Data Processing | Pending |
+| DATA-05 | Phase 2: OLX Scraper + Data Processing | Pending |
+| DATA-06 | Phase 2: OLX Scraper + Data Processing | Pending |
+| DASH-01 | Phase 3: Lead Management Dashboard | Pending |
+| DASH-02 | Phase 3: Lead Management Dashboard | Pending |
+| DASH-03 | Phase 3: Lead Management Dashboard | Pending |
+| DASH-06 | Phase 3: Lead Management Dashboard | Pending |
+| DASH-07 | Phase 3: Lead Management Dashboard | Pending |
+| MAIL-01 | Phase 4: Email Infrastructure | Pending |
+| MAIL-02 | Phase 4: Email Infrastructure | Pending |
+| MAIL-04 | Phase 4: Email Infrastructure | Pending |
+| MAIL-05 | Phase 4: Email Infrastructure | Pending |
+| MAIL-06 | Phase 4: Email Infrastructure | Pending |
+| DATA-04 | Phase 4: Email Infrastructure | Pending |
+| MAIL-03 | Phase 5: Follow-up Sequences | Pending |
+| SCRP-06 | Phase 5: Follow-up Sequences | Pending |
+| SCRP-02 | Phase 6: Additional Scrapers + Dashboard Enhancements | Pending |
+| DASH-04 | Phase 6: Additional Scrapers + Dashboard Enhancements | Pending |
+| DASH-05 | Phase 6: Additional Scrapers + Dashboard Enhancements | Pending |
 
 **Coverage:**
 - v1 requirements: 28 total
-- Mapped to phases: 0
-- Unmapped: 28
+- Mapped to phases: 28
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-06*
-*Last updated: 2026-04-06 after initial definition*
+*Last updated: 2026-04-06 — traceability populated after roadmap creation*
