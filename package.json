@@ -1,0 +1,19 @@
+{
+  "name": "seed-round-pipeling",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "get-shit-done-cc": "^1.32.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.2"
+  }
+}
