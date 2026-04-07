@@ -97,8 +97,11 @@ Plans:
   2. A lead that replies at any point in the sequence receives no further follow-up emails from that sequence
   3. User can configure the number of follow-ups and the interval between emails per sequence from the dashboard
   4. User can manually trigger a scrape job from the dashboard and see its progress/status in real time
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Follow-up sequencer core: migration + sendColdEmail targetStatus fix + scheduling library + follow-up worker + tests
+- [ ] 05-02-PLAN.md — Sequence config API + dashboard UI page + db push + SCRP-06 verification + human checkpoint
 
 ### Phase 6: Additional Scrapers + Dashboard Enhancements
 **Goal**: The pipeline covers a second lead source (Google Maps) and the dashboard provides funnel analytics and data export for operational decision-making.
@@ -119,11 +122,11 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-04-06 |
 | 2. OLX Scraper + Data Processing | 4/4 | Complete | 2026-04-06 |
-| 3. Lead Management Dashboard | 0/3 | Planning complete | - |
-| 4. Email Infrastructure | 0/3 | Planning complete | - |
-| 5. Follow-up Sequences | 0/? | Not started | - |
+| 3. Lead Management Dashboard | 3/3 | Complete | 2026-04-06 |
+| 4. Email Infrastructure | 3/3 | Complete | 2026-04-06 |
+| 5. Follow-up Sequences | 0/2 | Planning complete | - |
 | 6. Additional Scrapers + Dashboard Enhancements | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-07 — Phase 4 plans created (3 plans, 3 waves)*
+*Last updated: 2026-04-07 — Phase 5 plans created (2 plans, 2 waves)*
