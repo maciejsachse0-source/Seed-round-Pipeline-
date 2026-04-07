@@ -659,22 +659,16 @@ https://www.olx.pl/antyki-i-kolekcje/rekodzielo/q-handmade/?page=2
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Is the phone reveal button still JavaScript-gated or is phone now in static HTML?**
-   - What we know: Historical scrapers describe GIF-encoded phone (pre-2021); newer reports describe a reveal button
-   - What's unclear: Current (2026) behavior — button click vs. static HTML vs. API call
-   - Recommendation: Wave 0 task — open a live OLX.pl listing in browser devtools, inspect whether phone number is in the HTML source or loaded via XHR after button click. This determines whether got/Cheerio suffices or Playwright is needed.
+   - RESOLVED: Use Playwright for phone reveal (assumed JS-gated per community reports). CSS selectors marked [ASSUMED] — must be verified during first real scrape. Plan 02-03 handles this with Playwright+stealth.
 
 2. **OLX Public API vs. HTML Scraping: Which to use?**
-   - What we know: `robots.txt` allows `/api/v1/offers/`; the API exists and has unofficial wrappers; authentication (API key) required
-   - What's unclear: Ease of getting OLX developer account + API key; whether API exposes phone/contact data; rate limits on the API
-   - Recommendation: Build HTML scraping path first (no account required). Leave a `// TODO: implement OLX API path` stub in `olx-scraper.ts` with the `ScraperAdapter` interface. The API path can be added later.
+   - RESOLVED: HTML scraping path chosen (no OLX developer account required). ScraperAdapter interface allows API path stub for later addition. Plan 02-03 implements this.
 
 3. **Does `leads.email NOT NULL` constraint exist in the live Supabase DB?**
-   - What we know: Phase 1 Plan 01 migration included `email text UNIQUE NOT NULL`
-   - What's unclear: Whether Plan 04 (live DB push) was executed before Phase 2 starts
-   - Recommendation: Wave 0 — run `SELECT column_name, is_nullable FROM information_schema.columns WHERE table_name = 'leads' AND column_name = 'email'` against the live Supabase instance. If NOT NULLABLE, the schema migration is blocking and must be the first task.
+   - RESOLVED: Yes, it exists. Plan 02-01 Task 1 [BLOCKING] creates and pushes the nullable migration as the first operation in Phase 2.
 
 ---
 
