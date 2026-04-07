@@ -34,7 +34,7 @@ Plans:
 - [x] 01-01-PLAN.md — Supabase migration (5 tables, GDPR fields) + suppression list helper + Vitest setup
 - [x] 01-02-PLAN.md — Lead state machine (9 statuses, validated transitions) + pg-boss singleton + instrumentation.ts
 - [x] 01-03-PLAN.md — Next.js app scaffold + Supabase SSR/browser clients + dashboard shell + env config
-- [ ] 01-04-PLAN.md — [BLOCKING] supabase db push to live project + app verification + Gmail warmup checkpoint
+- [x] 01-04-PLAN.md — [BLOCKING] supabase db push to live project + app verification + Gmail warmup checkpoint
 
 ### Phase 2: OLX Scraper + Data Processing
 **Goal**: Scraped handmade seller leads from OLX appear in the Supabase database — normalized, deduplicated, and scored — ready for human review.
