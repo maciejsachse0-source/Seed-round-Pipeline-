@@ -1,47 +1,48 @@
 // app/dashboard/page.tsx
-// Dashboard shell — placeholder for Phase 3
-// This Server Component exercises the Supabase client to verify the connection is wired correctly
-import { createClient } from '@/lib/supabase/server'
+// Leads table page — Server Component
+// Pitfall 1: searchParams is a Promise in Next.js 15+ — MUST await before accessing properties
+import { fetchLeads } from '@/lib/queries/leads'
+import { LeadsTable } from '@/components/leads/LeadsTable'
+import { LeadsFilters } from '@/components/leads/LeadsFilters'
+import { Pagination } from '@/components/leads/Pagination'
 
-export default async function DashboardPage() {
-  // Attempt to connect to Supabase — will show connection error if env vars not set
-  let leadCount: number | null = null
-  let connectionError: string | null = null
+interface DashboardPageProps {
+  searchParams: Promise<{
+    page?: string
+    status?: string
+    sort?: string
+    dir?: string
+    search?: string
+  }>
+}
 
-  try {
-    const supabase = await createClient()
-    const { count, error } = await supabase
-      .from('leads')
-      .select('*', { count: 'exact', head: true })
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  // CRITICAL: await searchParams before accessing any field (Next.js 15+)
+  const params = await searchParams
+  const page = Math.max(1, Number(params.page ?? '1') || 1)
+  const status = params.status ?? undefined
+  const sort = params.sort ?? undefined
+  const dir = params.dir ?? undefined
+  const search = params.search ?? undefined
 
-    if (error) {
-      connectionError = error.message
-    } else {
-      leadCount = count
-    }
-  } catch (err) {
-    connectionError = err instanceof Error ? err.message : 'Unknown error'
-  }
+  const { leads, totalPages, count } = await fetchLeads({ page, status, sort, dir, search })
 
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Seed Round Pipeline</h1>
-      <p className="text-gray-500 mb-6">Dashboard — Phase 3 coming soon</p>
-
-      <div className="rounded border p-4 bg-white shadow-sm max-w-sm">
-        <h2 className="font-semibold mb-2">Database Status</h2>
-        {connectionError ? (
-          <p className="text-red-600 text-sm">
-            Connection error: {connectionError}
-            <br />
-            <span className="text-gray-400">Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local</span>
-          </p>
-        ) : (
-          <p className="text-green-600 text-sm">
-            Connected — {leadCount ?? 0} leads in database
-          </p>
-        )}
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Leady</h1>
+        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+          {count}
+        </span>
       </div>
-    </main>
+
+      <LeadsFilters />
+
+      <div className="bg-white rounded border shadow-sm">
+        <LeadsTable leads={leads} rowCount={count} />
+      </div>
+
+      <Pagination currentPage={page} totalPages={totalPages} />
+    </div>
   )
 }
