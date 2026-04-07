@@ -81,7 +81,12 @@ Plans:
   3. When a recipient replies, the system detects the reply within 15 minutes via Gmail API polling and marks the lead's sequence as stopped
   4. The system enforces the 40-50 emails/day cap and 60-120 second spacing between sends — no batch can exceed this
   5. Each sent email includes a functioning opt-out link that adds the recipient to the suppression list on click
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Install deps + migration (opened_at, start_history_id) + db push + MX validation + rate limiter + unsubscribe HMAC + transporter
+- [ ] 04-02-PLAN.md — sendColdEmail complete pipeline + pg-boss email-send worker (retryLimit:0, 90s spacing)
+- [ ] 04-03-PLAN.md — Reply detection (Gmail history polling cron) + tracking pixel route + opt-out route + instrumentation wiring
 
 ### Phase 5: Follow-up Sequences
 **Goal**: The system automatically sends configured follow-up emails to leads that have not replied, stopping immediately on any reply.
@@ -115,10 +120,10 @@ Plans:
 | 1. Foundation | 4/4 | Complete | 2026-04-06 |
 | 2. OLX Scraper + Data Processing | 4/4 | Complete | 2026-04-06 |
 | 3. Lead Management Dashboard | 0/3 | Planning complete | - |
-| 4. Email Infrastructure | 0/? | Not started | - |
+| 4. Email Infrastructure | 0/3 | Planning complete | - |
 | 5. Follow-up Sequences | 0/? | Not started | - |
 | 6. Additional Scrapers + Dashboard Enhancements | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-07 — Phase 3 plans created (3 plans, 2 waves)*
+*Last updated: 2026-04-07 — Phase 4 plans created (3 plans, 3 waves)*
