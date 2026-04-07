@@ -479,22 +479,16 @@ export async function sendColdEmail(lead: Lead, template: EmailTemplate): Promis
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Where to store `startHistoryId` for reply polling?**
-   - What we know: `email_events` has `gmail_message_id` and `gmail_thread_id` columns
-   - What's unclear: `historyId` is a different value from `messageId`. The schema may need a dedicated `start_history_id` column, OR a separate table/row could store the global latest historyId.
-   - Recommendation: Add `start_history_id TEXT` to `email_events`, populated at send time. Planner should decide this in Wave 0 migration.
+   - RESOLVED: Add `start_history_id TEXT` column to `email_events` via Wave 0 migration. Populated at send time after `gmail.users.messages.get` call.
 
 2. **How to handle the OAuth2 one-time refresh token acquisition?**
-   - What we know: Getting the first `GMAIL_REFRESH_TOKEN` requires a browser-based consent flow. This is not automatable.
-   - What's unclear: Whether the operator already has Google Workspace set up (open item in STATE.md).
-   - Recommendation: Plan Wave 0 includes a documented manual step with exact OAuth2 consent URL construction and how to extract the refresh token.
+   - RESOLVED: Wave 0 includes a checkpoint:human-action with exact OAuth2 consent URL and refresh token extraction steps. Operator must complete this before any sends.
 
 3. **Dashboard trigger: send to single lead vs batch enqueue?**
-   - What we know: Phase 4 goal is sending to a single approved lead from the dashboard. Phase 5 adds sequences.
-   - What's unclear: Whether the dashboard should show "Send to all approved leads" as a batch action in Phase 4 or only single-lead sends.
-   - Recommendation: Phase 4 = single lead only. Keep scope minimal; batch is Phase 5 territory.
+   - RESOLVED: Phase 4 = single lead only. Batch enqueue is Phase 5 scope.
 
 ---
 
