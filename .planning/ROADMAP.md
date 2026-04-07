@@ -84,9 +84,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Install deps + migration (opened_at, start_history_id) + db push + MX validation + rate limiter + unsubscribe HMAC + transporter
-- [ ] 04-02-PLAN.md — sendColdEmail complete pipeline + pg-boss email-send worker (retryLimit:0, 90s spacing)
-- [ ] 04-03-PLAN.md — Reply detection (Gmail history polling cron) + tracking pixel route + opt-out route + instrumentation wiring
+- [x] 04-01-PLAN.md — Install deps + migration (opened_at, start_history_id) + db push + MX validation + rate limiter + unsubscribe HMAC + transporter
+- [x] 04-02-PLAN.md — sendColdEmail complete pipeline + pg-boss email-send worker (retryLimit:0, 90s spacing)
+- [x] 04-03-PLAN.md — Reply detection (Gmail history polling cron) + tracking pixel route + opt-out route + instrumentation wiring
 
 ### Phase 5: Follow-up Sequences
 **Goal**: The system automatically sends configured follow-up emails to leads that have not replied, stopping immediately on any reply.
