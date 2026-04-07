@@ -3,94 +3,56 @@
 // All external dependencies are mocked: transporter, supabase, dns, googleapis
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-// --- Mock all external dependencies before importing the module under test ---
+// --- Mock all external dependencies ---
+// vi.mock factories are hoisted to top of file, so they cannot reference outer let/const.
+// Instead, mock modules with vi.fn() stubs returned inline and retrieve them via vi.mocked().
 
-// Mock nodemailer transporter
-const mockSendMail = vi.fn()
 vi.mock('@/lib/email/transporter', () => ({
-  getTransporter: () => ({ sendMail: mockSendMail }),
+  getTransporter: vi.fn(),
 }))
 
-// Mock suppression list
-const mockIsEmailSuppressed = vi.fn()
-const mockAddToSuppressionList = vi.fn()
 vi.mock('@/lib/db/suppression', () => ({
-  isEmailSuppressed: mockIsEmailSuppressed,
-  addToSuppressionList: mockAddToSuppressionList,
+  isEmailSuppressed: vi.fn(),
+  addToSuppressionList: vi.fn(),
 }))
 
-// Mock MX check
-const mockValidateMx = vi.fn()
 vi.mock('@/lib/email/mx-check', () => ({
-  validateMx: mockValidateMx,
+  validateMx: vi.fn(),
 }))
 
-// Mock rate limiter
-const mockCanSendToday = vi.fn()
 vi.mock('@/lib/email/rate-limiter', () => ({
-  canSendToday: mockCanSendToday,
+  canSendToday: vi.fn(),
   DAILY_CAP: 45,
   SEND_SPACING_MS: 90_000,
 }))
 
-// Mock unsubscribe token
 vi.mock('@/lib/email/unsubscribe-token', () => ({
-  generateUnsubscribeToken: vi.fn().mockReturnValue('mock-unsub-token'),
+  generateUnsubscribeToken: vi.fn(),
 }))
-
-// Mock supabase client
-const mockSupabaseFrom = vi.fn()
-const mockUpdate = vi.fn()
-const mockInsert = vi.fn()
-const mockEq = vi.fn()
-const mockSingle = vi.fn()
-const mockSelect = vi.fn()
-
-const createChain = () => {
-  const chain: Record<string, ReturnType<typeof vi.fn>> = {}
-  chain.select = vi.fn().mockReturnValue(chain)
-  chain.update = vi.fn().mockReturnValue(chain)
-  chain.insert = vi.fn().mockReturnValue(chain)
-  chain.eq = vi.fn().mockReturnValue(chain)
-  chain.single = vi.fn().mockResolvedValue({ data: null, error: null })
-  return chain
-}
-
-let supabaseChain: ReturnType<typeof createChain>
 
 vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn().mockImplementation(() => {
-    supabaseChain = createChain()
-    return Promise.resolve({
-      from: vi.fn().mockReturnValue(supabaseChain),
-    })
-  }),
+  createClient: vi.fn(),
 }))
 
-// Mock googleapis
-const mockMessagesList = vi.fn()
-const mockMessagesGet = vi.fn()
 vi.mock('googleapis', () => ({
   google: {
     auth: {
-      OAuth2: vi.fn().mockImplementation(() => ({
-        setCredentials: vi.fn(),
-      })),
+      OAuth2: vi.fn(),
     },
-    gmail: vi.fn().mockReturnValue({
-      users: {
-        messages: {
-          list: mockMessagesList,
-          get: mockMessagesGet,
-        },
-      },
-    }),
+    gmail: vi.fn(),
   },
 }))
 
 // Import after mocks are set up
 import { sendColdEmail } from '@/lib/email/send'
 import type { Lead, EmailTemplate } from '@/lib/db/types'
+import { getTransporter } from '@/lib/email/transporter'
+import { isEmailSuppressed, addToSuppressionList } from '@/lib/db/suppression'
+import { validateMx } from '@/lib/email/mx-check'
+import { canSendToday } from '@/lib/email/rate-limiter'
+import { generateUnsubscribeToken } from '@/lib/email/unsubscribe-token'
+import { createClient } from '@/lib/supabase/server'
+import { google } from 'googleapis'
 
 // --- Test fixtures ---
 
@@ -103,7 +65,7 @@ const mockLead: Lead = {
   source_platform: 'olx',
   source_url: null,
   business_description: null,
-  categories: ['ceramika', 'biżuteria'],
+  categories: ['ceramika', 'bizuteria'],
   price_range: null,
   social_links: null,
   score: 75,
@@ -117,19 +79,54 @@ const mockLead: Lead = {
 const mockTemplate: EmailTemplate = {
   id: 'template-456',
   name: 'Cold email #1',
-  subject: 'Cześć {name}!',
-  body: '<p>Dzień dobry {name} z {city}! Twoja działalność w kategorii {category} nas zainteresowała.</p>',
+  subject: 'Czesc {name}!',
+  body: '<p>Dzien dobry {name} z {city}! Twoja dzialalnosc w kategorii {category} nas zainteresowal.</p>',
   sequence_position: 1,
   is_active: true,
   created_at: '2026-04-06T10:00:00Z',
+}
+
+// Helper to create a chainable Supabase mock
+function makeSupabaseMock() {
+  const chain = {
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    single: vi.fn().mockResolvedValue({ data: null, error: null }),
+  }
+  const mockFrom = vi.fn().mockReturnValue(chain)
+  vi.mocked(createClient).mockResolvedValue({ from: mockFrom } as unknown as Awaited<ReturnType<typeof createClient>>)
+  return { mockFrom, chain }
+}
+
+// Helper to create Gmail API mock
+function makeGmailMock(gmailMsgId = 'gmail-msg-id-abc', historyId = '12345', threadId = 'thread-xyz') {
+  const mockMessagesList = vi.fn().mockResolvedValue({
+    data: { messages: [{ id: gmailMsgId }] },
+  })
+  const mockMessagesGet = vi.fn().mockResolvedValue({
+    data: { historyId, threadId },
+  })
+  // Must use function constructor for 'new' usage
+  vi.mocked(google.auth.OAuth2).mockImplementation(function (this: unknown) {
+    (this as { setCredentials: ReturnType<typeof vi.fn> }).setCredentials = vi.fn()
+  } as unknown as typeof google.auth.OAuth2)
+  vi.mocked(google.gmail).mockReturnValue({
+    users: { messages: { list: mockMessagesList, get: mockMessagesGet } },
+  } as unknown as ReturnType<typeof google.gmail>)
+  return { mockMessagesList, mockMessagesGet }
 }
 
 beforeEach(() => {
   vi.clearAllMocks()
   process.env.NEXT_PUBLIC_APP_URL = 'https://app.example.com'
   process.env.GMAIL_SENDER_EMAIL = 'sender@example.com'
+  process.env.GMAIL_CLIENT_ID = 'client-id'
+  process.env.GMAIL_CLIENT_SECRET = 'client-secret'
+  process.env.GMAIL_REFRESH_TOKEN = 'refresh-token'
   process.env.UNSUBSCRIBE_SECRET = 'test-secret'
-  supabaseChain = createChain()
+  vi.mocked(generateUnsubscribeToken).mockReturnValue('mock-unsub-token')
 })
 
 // --- Tests ---
@@ -139,64 +136,63 @@ describe('sendColdEmail — skip reasons', () => {
     const leadNoEmail = { ...mockLead, email: null }
     const result = await sendColdEmail(leadNoEmail, mockTemplate)
     expect(result).toEqual({ success: false, skipReason: 'no_email' })
-    expect(mockIsEmailSuppressed).not.toHaveBeenCalled()
+    expect(isEmailSuppressed).not.toHaveBeenCalled()
   })
 
   it('returns { success: false, skipReason: "suppressed" } when email is suppressed', async () => {
-    mockIsEmailSuppressed.mockResolvedValue(true)
+    vi.mocked(isEmailSuppressed).mockResolvedValue(true)
     const result = await sendColdEmail(mockLead, mockTemplate)
     expect(result).toEqual({ success: false, skipReason: 'suppressed' })
-    expect(mockValidateMx).not.toHaveBeenCalled()
+    expect(validateMx).not.toHaveBeenCalled()
   })
 
   it('returns { success: false, skipReason: "invalid_mx" } when MX check fails', async () => {
-    mockIsEmailSuppressed.mockResolvedValue(false)
-    mockValidateMx.mockResolvedValue(false)
+    vi.mocked(isEmailSuppressed).mockResolvedValue(false)
+    vi.mocked(validateMx).mockResolvedValue(false)
     const result = await sendColdEmail(mockLead, mockTemplate)
     expect(result).toEqual({ success: false, skipReason: 'invalid_mx' })
   })
 
   it('calls addToSuppressionList with bounce_hard when MX check fails', async () => {
-    mockIsEmailSuppressed.mockResolvedValue(false)
-    mockValidateMx.mockResolvedValue(false)
+    vi.mocked(isEmailSuppressed).mockResolvedValue(false)
+    vi.mocked(validateMx).mockResolvedValue(false)
     await sendColdEmail(mockLead, mockTemplate)
-    expect(mockAddToSuppressionList).toHaveBeenCalledWith('jan@example.com', 'bounce_hard')
+    expect(addToSuppressionList).toHaveBeenCalledWith('jan@example.com', 'bounce_hard')
   })
 
   it('returns { success: false, skipReason: "cap_reached" } when daily cap exceeded', async () => {
-    mockIsEmailSuppressed.mockResolvedValue(false)
-    mockValidateMx.mockResolvedValue(true)
-    mockCanSendToday.mockResolvedValue(false)
+    vi.mocked(isEmailSuppressed).mockResolvedValue(false)
+    vi.mocked(validateMx).mockResolvedValue(true)
+    vi.mocked(canSendToday).mockResolvedValue(false)
     const result = await sendColdEmail(mockLead, mockTemplate)
     expect(result).toEqual({ success: false, skipReason: 'cap_reached' })
-    expect(mockSendMail).not.toHaveBeenCalled()
+    expect(getTransporter).not.toHaveBeenCalled()
   })
 })
 
 describe('sendColdEmail — successful send', () => {
+  let mockSendMail: ReturnType<typeof vi.fn>
+
   beforeEach(() => {
-    mockIsEmailSuppressed.mockResolvedValue(false)
-    mockValidateMx.mockResolvedValue(true)
-    mockCanSendToday.mockResolvedValue(true)
-    mockSendMail.mockResolvedValue({ messageId: '<msg-id-123@gmail.com>' })
-    mockMessagesList.mockResolvedValue({
-      data: { messages: [{ id: 'gmail-msg-id-abc' }] },
-    })
-    mockMessagesGet.mockResolvedValue({
-      data: { historyId: '12345', threadId: 'thread-xyz' },
-    })
+    vi.mocked(isEmailSuppressed).mockResolvedValue(false)
+    vi.mocked(validateMx).mockResolvedValue(true)
+    vi.mocked(canSendToday).mockResolvedValue(true)
+    mockSendMail = vi.fn().mockResolvedValue({ messageId: '<msg-id-123@gmail.com>' })
+    vi.mocked(getTransporter).mockReturnValue({ sendMail: mockSendMail } as unknown as ReturnType<typeof getTransporter>)
+    makeGmailMock()
+    makeSupabaseMock()
   })
 
-  it('calls sendMail with correct from, to, subject after token substitution', async () => {
+  it('calls sendMail with correct from, to, and substituted subject', async () => {
     await sendColdEmail(mockLead, mockTemplate)
     expect(mockSendMail).toHaveBeenCalledOnce()
     const callArg = mockSendMail.mock.calls[0][0]
     expect(callArg.from).toBe('sender@example.com')
     expect(callArg.to).toBe('jan@example.com')
-    expect(callArg.subject).toBe('Cześć Jan Kowalski!')
+    expect(callArg.subject).toBe('Czesc Jan Kowalski!')
   })
 
-  it('substitutes {name}, {city}, {category} tokens in email body', async () => {
+  it('substitutes {name}, {city}, {category} tokens in HTML body', async () => {
     await sendColdEmail(mockLead, mockTemplate)
     const callArg = mockSendMail.mock.calls[0][0]
     expect(callArg.html).toContain('Jan Kowalski')
@@ -222,72 +218,60 @@ describe('sendColdEmail — successful send', () => {
   })
 
   it('calls gmail.users.messages.list to get Gmail message ID', async () => {
+    const { mockMessagesList } = makeGmailMock()
     await sendColdEmail(mockLead, mockTemplate)
     expect(mockMessagesList).toHaveBeenCalledOnce()
-    expect(mockMessagesList.mock.calls[0][0]).toMatchObject({
-      userId: 'me',
-    })
+    const callArg = mockMessagesList.mock.calls[0][0]
+    expect(callArg.userId).toBe('me')
   })
 
   it('returns { success: true, gmailMessageId, emailEventId } on success', async () => {
     const result = await sendColdEmail(mockLead, mockTemplate)
     expect(result.success).toBe(true)
     expect(result.gmailMessageId).toBe('gmail-msg-id-abc')
-    expect(result.emailEventId).toBeDefined()
+    expect(result.emailEventId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    )
   })
 
-  it('writes email_event row with status sent and Gmail IDs', async () => {
-    const mockFrom = vi.fn()
-    const { createClient } = await import('@/lib/supabase/server')
-    vi.mocked(createClient).mockImplementation(async () => {
-      const insertChain = {
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: null, error: null }),
-        update: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-      }
-      mockFrom.mockReturnValue(insertChain)
-      return { from: mockFrom } as unknown as ReturnType<typeof createClient> extends Promise<infer T> ? T : never
-    })
-
+  it('writes email_event row with status="sent" and Gmail IDs', async () => {
+    const { mockFrom, chain } = makeSupabaseMock()
     await sendColdEmail(mockLead, mockTemplate)
-    // Verify that from('email_events') was called with insert containing status='sent'
-    const emailEventsCalls = mockFrom.mock.calls.filter((c: [string]) => c[0] === 'email_events')
-    expect(emailEventsCalls.length).toBeGreaterThan(0)
+    // email_events insert was called
+    const emailEventCall = mockFrom.mock.calls.find((c: unknown[]) => c[0] === 'email_events')
+    expect(emailEventCall).toBeDefined()
+    expect(chain.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'sent',
+        lead_id: 'lead-123',
+        template_id: 'template-456',
+        gmail_message_id: 'gmail-msg-id-abc',
+        gmail_thread_id: 'thread-xyz',
+        start_history_id: '12345',
+      })
+    )
   })
 
-  it('updates lead status to contacted via assertTransition guard', async () => {
-    const mockFrom = vi.fn()
-    const { createClient } = await import('@/lib/supabase/server')
-    vi.mocked(createClient).mockImplementation(async () => {
-      const chain = {
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: null, error: null }),
-        update: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-      }
-      mockFrom.mockReturnValue(chain)
-      return { from: mockFrom } as unknown as ReturnType<typeof createClient> extends Promise<infer T> ? T : never
-    })
-
-    const result = await sendColdEmail(mockLead, mockTemplate)
-    expect(result.success).toBe(true)
-    // Lead update to 'contacted' was attempted
-    const leadsCalls = mockFrom.mock.calls.filter((c: [string]) => c[0] === 'leads')
-    expect(leadsCalls.length).toBeGreaterThan(0)
+  it('updates lead status to "contacted"', async () => {
+    const { mockFrom, chain } = makeSupabaseMock()
+    await sendColdEmail(mockLead, mockTemplate)
+    const leadsCall = mockFrom.mock.calls.find((c: unknown[]) => c[0] === 'leads')
+    expect(leadsCall).toBeDefined()
+    expect(chain.update).toHaveBeenCalledWith(
+      expect.objectContaining({ status: 'contacted' })
+    )
   })
 })
 
 describe('sendColdEmail — assertTransition validation', () => {
   it('throws if lead has invalid status for contacted transition', async () => {
-    mockIsEmailSuppressed.mockResolvedValue(false)
-    mockValidateMx.mockResolvedValue(true)
-    mockCanSendToday.mockResolvedValue(true)
-    mockSendMail.mockResolvedValue({ messageId: '<msg-id@gmail.com>' })
-    mockMessagesList.mockResolvedValue({ data: { messages: [{ id: 'gid' }] } })
-    mockMessagesGet.mockResolvedValue({ data: { historyId: '1', threadId: 'tid' } })
+    vi.mocked(isEmailSuppressed).mockResolvedValue(false)
+    vi.mocked(validateMx).mockResolvedValue(true)
+    vi.mocked(canSendToday).mockResolvedValue(true)
+    const mockSendMail = vi.fn().mockResolvedValue({ messageId: '<msg@gmail.com>' })
+    vi.mocked(getTransporter).mockReturnValue({ sendMail: mockSendMail } as unknown as ReturnType<typeof getTransporter>)
+    makeGmailMock()
+    makeSupabaseMock()
 
     const leadWithWrongStatus: Lead = { ...mockLead, status: 'new' }
     await expect(sendColdEmail(leadWithWrongStatus, mockTemplate)).rejects.toThrow(
