@@ -7,7 +7,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** - Schema, infrastructure, GDPR fields, Gmail warmup start
+- [x] **Phase 1: Foundation** - Schema, infrastructure, GDPR fields, Gmail warmup start
 - [ ] **Phase 2: OLX Scraper + Data Processing** - End-to-end scrape pipeline with normalization, dedup, and lead scoring
 - [ ] **Phase 3: Lead Management Dashboard** - Visibility and manual control before any email is sent
 - [ ] **Phase 4: Email Infrastructure** - Gmail sending + reply detection shipped together
@@ -46,8 +46,13 @@ Plans:
   3. Polish characters, phone number formats, and city names are normalized consistently across all ingested leads
   4. Each lead has a numeric score 0-100 stored in Supabase, reflecting activity, category match, and profile completeness
   5. The scraper respects configurable rate limits — no request bursts that would trigger a platform ban
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 4 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Install deps + email-nullable migration + db push + scraper type contracts + Zod schema + URL builder
+- [ ] 02-02-PLAN.md — Polish data normalization (phone E.164, city, text NFC) + lead scoring algorithm (TDD)
+- [ ] 02-03-PLAN.md — OLX scraper: HTML parser, selectors, HTTP client, phone reveal (Playwright+stealth), rate limiting
+- [ ] 02-04-PLAN.md — Ingestion pipeline (dedup + ingest orchestrator) + pg-boss worker + API route + instrumentation wiring
 
 ### Phase 3: Lead Management Dashboard
 **Goal**: The user can view, filter, and manually manage all scraped leads through a web dashboard before any automated outreach begins.
@@ -103,8 +108,8 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/4 | In Progress|  |
-| 2. OLX Scraper + Data Processing | 0/? | Not started | - |
+| 1. Foundation | 4/4 | Complete | 2026-04-06 |
+| 2. OLX Scraper + Data Processing | 0/4 | Planning complete | - |
 | 3. Lead Management Dashboard | 0/? | Not started | - |
 | 4. Email Infrastructure | 0/? | Not started | - |
 | 5. Follow-up Sequences | 0/? | Not started | - |
@@ -112,4 +117,4 @@ Plans:
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-06 — Phase 1 plans created (4 plans, 3 waves)*
+*Last updated: 2026-04-06 — Phase 2 plans created (4 plans, 3 waves)*
