@@ -476,22 +476,16 @@ export async function PATCH(request: Request) {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`startAfter` unit: seconds or milliseconds?**
-   - What we know: types.d.ts declares `startAfter?: number | string | Date`; the pg-boss README example uses `startAfter: 60` described as "1 minute" — implying seconds.
-   - What's unclear: Not explicitly stated in the installed types file.
-   - Recommendation: Add a unit test that enqueues a job with `startAfter: 5` and verifies it fires ~5 seconds later, not ~5ms later. Treat as seconds based on README evidence.
+   - RESOLVED: Seconds, per pg-boss README ("startAfter: 60" = 1 minute). Use seconds for all delay calculations.
 
 2. **Should `sequence_config` be per-template-set or global singleton?**
-   - What we know: MAIL-03 says "user can configure follow-up count and interval per sequence." The current template model uses `sequence_position` — there is implicitly one sequence.
-   - What's unclear: Whether v1 should support multiple named sequences.
-   - Recommendation: Global singleton for v1. Named sequences are a v2 feature.
+   - RESOLVED: Global singleton for v1. Named sequences are v2 scope.
 
-3. **Does Phase 3 scrape infrastructure actually compile and run?**
-   - What we know: Phase 3 plans (03-01, 03-02, 03-03) are marked "Planning complete" in ROADMAP.md; the files exist in the repo (`TriggerScrapeForm.tsx`, `app/api/scrape/route.ts`, etc.).
-   - What's unclear: Whether `npx tsc --noEmit` passes for Phase 3 code.
-   - Recommendation: Wave 0 of Phase 5 runs `npx tsc --noEmit` and `npx vitest run` to confirm Phase 3 + 4 code compiles cleanly before adding Phase 5 code.
+3. **Does Phase 3+4 code compile cleanly?**
+   - RESOLVED: Yes — 210 tests passing, TypeScript 0 errors (verified at Phase 4 completion).
 
 ---
 
