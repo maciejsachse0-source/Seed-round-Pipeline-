@@ -82,3 +82,10 @@ export interface SuppressionEntry {
   reason: SuppressionReason
   created_at: string
 }
+
+export interface SequenceConfig {
+  id: number
+  max_follow_ups: number
+  interval_days: number
+  updated_at: string
+}

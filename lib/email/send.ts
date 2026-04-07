@@ -35,15 +35,21 @@ export interface SendColdEmailResult {
  *   5. Token substitution, pixel/opt-out injection, send
  *   6. Gmail message ID retrieval (for history polling)
  *   7. email_event record write
- *   8. Lead status transition to 'contacted'
+ *   8. Lead status transition (defaults to 'contacted'; pass targetStatus for follow-ups)
  *
  * On Nodemailer error: writes email_event with status='failed', does NOT
  * transition lead, rethrows so the pg-boss worker can log it.
+ *
+ * @param options.targetStatus  - Target lead status after send (default: LeadStatus.CONTACTED)
+ * @param options.sequenceNumber - sequence_number written to email_events (default: 0)
  */
 export async function sendColdEmail(
   lead: Lead,
-  template: EmailTemplate
+  template: EmailTemplate,
+  options?: { targetStatus?: LeadStatus; sequenceNumber?: number }
 ): Promise<SendColdEmailResult> {
+  const targetStatus = options?.targetStatus ?? LeadStatus.CONTACTED
+  const sequenceNumber = options?.sequenceNumber ?? 0
   // --- Guard 1: email presence ---
   if (!lead.email) {
     return { success: false, skipReason: 'no_email' }
@@ -142,7 +148,7 @@ export async function sendColdEmail(
       id: eventId,
       lead_id: lead.id,
       template_id: template.id,
-      sequence_number: 0,
+      sequence_number: sequenceNumber,
       sent_at: new Date().toISOString(),
       status: 'sent',
       gmail_message_id: gmailMessageId,
@@ -150,12 +156,12 @@ export async function sendColdEmail(
       start_history_id: startHistoryId,
     })
 
-    // --- Transition lead status to 'contacted' ---
+    // --- Transition lead status ---
     // assertTransition will throw if the current status doesn't allow this transition
-    assertTransition(lead.status as LeadStatus, LeadStatus.CONTACTED)
+    assertTransition(lead.status as LeadStatus, targetStatus)
     await supabase
       .from('leads')
-      .update({ status: 'contacted', updated_at: new Date().toISOString() })
+      .update({ status: targetStatus, updated_at: new Date().toISOString() })
       .eq('id', lead.id)
 
     return { success: true, emailEventId: eventId, gmailMessageId: gmailMessageId ?? undefined }
@@ -166,7 +172,7 @@ export async function sendColdEmail(
         id: eventId,
         lead_id: lead.id,
         template_id: template.id,
-        sequence_number: 0,
+        sequence_number: sequenceNumber,
         sent_at: new Date().toISOString(),
         status: 'failed',
         gmail_message_id: null,
