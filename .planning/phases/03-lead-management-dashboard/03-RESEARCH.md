@@ -543,22 +543,16 @@ export function LeadsTable({
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Authentication on the dashboard**
-   - What we know: STATE.md note says "Phase 2 has no auth; Phase 3 dashboard adds auth (T-02-10 accepted risk)"
-   - What's unclear: Is auth actually required in Phase 3, or is it still deferred? The DASH requirements don't list an auth requirement. The project is single-user (operator only).
-   - Recommendation: Treat as out of scope for Phase 3 — the dashboard is a local-run/private tool. Add a TODO comment in the dashboard layout. Phase 4 or a dedicated security phase can add Supabase Auth if the app is deployed publicly.
+   - RESOLVED: Out of scope for Phase 3. Dashboard is a local-run/private operator tool. DASH requirements don't include auth. Supabase Auth can be added in a future security phase if deployed publicly.
 
 2. **Scrape job progress display for DASH-07**
-   - What we know: `POST /api/scrape` returns `{ jobId }`. The `scrape_jobs` table has `status`, `leads_found`, `leads_new`, `completed_at`.
-   - What's unclear: Does the user need live progress (Realtime) or is a manual "check status" / auto-poll sufficient?
-   - Recommendation: Use a simple client-side poll (3s interval, stop when `status === 'completed'` or `'failed'`) hitting a `GET /api/scrape/[jobId]` route. Supabase Realtime adds complexity not warranted at MVP.
+   - RESOLVED: Simple client-side poll (3s interval) hitting `GET /api/scrape/[jobId]` route. Stop on `status === 'completed'` or `'failed'`. Supabase Realtime not warranted at MVP.
 
 3. **Dashboard navigation structure**
-   - What we know: App currently has only `/dashboard`. Phase 3 adds leads detail, templates, scrape trigger.
-   - What's unclear: Should templates and scrape trigger be separate pages or panels within the main dashboard?
-   - Recommendation: Separate routes (`/dashboard/templates`, `/dashboard/templates/[id]`, `/dashboard/scrape`). Easier to navigate and link to, consistent with Next.js App Router conventions. A shared `app/dashboard/layout.tsx` provides the nav sidebar.
+   - RESOLVED: Separate routes (`/dashboard/templates`, `/dashboard/templates/[id]`, `/dashboard/scrape`). Shared `app/dashboard/layout.tsx` with nav sidebar. Consistent with Next.js App Router conventions.
 
 ---
 
