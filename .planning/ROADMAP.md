@@ -49,10 +49,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Install deps + email-nullable migration + db push + scraper type contracts + Zod schema + URL builder
-- [ ] 02-02-PLAN.md — Polish data normalization (phone E.164, city, text NFC) + lead scoring algorithm (TDD)
-- [ ] 02-03-PLAN.md — OLX scraper: HTML parser, selectors, HTTP client, phone reveal (Playwright+stealth), rate limiting
-- [ ] 02-04-PLAN.md — Ingestion pipeline (dedup + ingest orchestrator) + pg-boss worker + API route + instrumentation wiring
+- [x] 02-01-PLAN.md — Install deps + email-nullable migration + db push + scraper type contracts + Zod schema + URL builder
+- [x] 02-02-PLAN.md — Polish data normalization (phone E.164, city, text NFC) + lead scoring algorithm (TDD)
+- [x] 02-03-PLAN.md — OLX scraper: HTML parser, selectors, HTTP client, phone reveal (Playwright+stealth), rate limiting
+- [x] 02-04-PLAN.md — Ingestion pipeline (dedup + ingest orchestrator) + pg-boss worker + API route + instrumentation wiring
 
 ### Phase 3: Lead Management Dashboard
 **Goal**: The user can view, filter, and manually manage all scraped leads through a web dashboard before any automated outreach begins.
