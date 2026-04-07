@@ -8,7 +8,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundation** - Schema, infrastructure, GDPR fields, Gmail warmup start
-- [ ] **Phase 2: OLX Scraper + Data Processing** - End-to-end scrape pipeline with normalization, dedup, and lead scoring
+- [x] **Phase 2: OLX Scraper + Data Processing** - End-to-end scrape pipeline with normalization, dedup, and lead scoring
 - [ ] **Phase 3: Lead Management Dashboard** - Visibility and manual control before any email is sent
 - [ ] **Phase 4: Email Infrastructure** - Gmail sending + reply detection shipped together
 - [ ] **Phase 5: Follow-up Sequences** - Automated sequences gated on proven reply detection
@@ -64,8 +64,12 @@ Plans:
   3. User can view the full email history for a specific lead (sent emails, reply events, status changes)
   4. User can create and edit email templates with personalization tokens ({name}, {city}, {category}) from the dashboard
   5. User can trigger a scrape job for a chosen platform and parameters directly from the dashboard
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Install deps + NuqsAdapter + dashboard layout + Server Actions + query helpers + tests
+- [ ] 03-02-PLAN.md — Leads table with filters/sort/pagination + status change UI + lead detail page with email history
+- [ ] 03-03-PLAN.md — Email template CRUD with live preview + scrape trigger page with job status polling
 
 ### Phase 4: Email Infrastructure
 **Goal**: The user can send a cold email to an approved lead through Gmail, and the system automatically stops the sequence when a reply is detected.
@@ -97,7 +101,7 @@ Plans:
 **Requirements**: SCRP-02, DASH-04, DASH-05
 **Success Criteria** (what must be TRUE):
   1. Running a Google Maps scrape job for a given location and category produces leads in Supabase using the same adapter interface as OLX
-  2. User can view a funnel analytics view showing conversion counts per pipeline stage (new → contacted → replied → interested) broken down by source platform
+  2. User can view a funnel analytics view showing conversion counts per pipeline stage (new -> contacted -> replied -> interested) broken down by source platform
   3. User can export all interested/approved sellers to a CSV or JSON file from the dashboard
 **Plans**: TBD
 **UI hint**: yes
@@ -109,12 +113,12 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete | 2026-04-06 |
-| 2. OLX Scraper + Data Processing | 0/4 | Planning complete | - |
-| 3. Lead Management Dashboard | 0/? | Not started | - |
+| 2. OLX Scraper + Data Processing | 4/4 | Complete | 2026-04-06 |
+| 3. Lead Management Dashboard | 0/3 | Planning complete | - |
 | 4. Email Infrastructure | 0/? | Not started | - |
 | 5. Follow-up Sequences | 0/? | Not started | - |
 | 6. Additional Scrapers + Dashboard Enhancements | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-06 — Phase 2 plans created (4 plans, 3 waves)*
+*Last updated: 2026-04-07 — Phase 3 plans created (3 plans, 2 waves)*
