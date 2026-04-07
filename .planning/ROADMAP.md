@@ -67,9 +67,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Install deps + NuqsAdapter + dashboard layout + Server Actions + query helpers + tests
-- [ ] 03-02-PLAN.md — Leads table with filters/sort/pagination + status change UI + lead detail page with email history
-- [ ] 03-03-PLAN.md — Email template CRUD with live preview + scrape trigger page with job status polling
+- [x] 03-01-PLAN.md — Install deps + NuqsAdapter + dashboard layout + Server Actions + query helpers + tests
+- [x] 03-02-PLAN.md — Leads table with filters/sort/pagination + status change UI + lead detail page with email history
+- [x] 03-03-PLAN.md — Email template CRUD with live preview + scrape trigger page with job status polling
 
 ### Phase 4: Email Infrastructure
 **Goal**: The user can send a cold email to an approved lead through Gmail, and the system automatically stops the sequence when a reply is detected.
