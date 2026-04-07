@@ -21,7 +21,7 @@ export type SuppressionReason = 'opt_out' | 'bounce_hard' | 'spam_complaint' | '
 export interface Lead {
   id: string
   name: string | null
-  email: string
+  email: string | null
   phone: string | null
   city: string | null
   source_platform: string
