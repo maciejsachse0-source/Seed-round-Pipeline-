@@ -1,13 +1,33 @@
 // lib/scrapers/index.ts
-// Registry stub for available scraper adapters.
-// OlxScraper will be registered here in Plan 03 when the OlxScraper class is built.
+// Scraper registry — maps platform names to their ScraperAdapter implementations.
+// Add new scraper platforms here as they are built in future phases.
 
-import type { ScraperAdapter } from './types'
+import type { ScraperAdapter, ScraperConfig } from './types'
+import { OlxScraper } from './olx/olx-scraper'
+
+// Map of platform name -> constructor for each registered scraper adapter
+const SCRAPERS: Record<string, new (config: ScraperConfig) => ScraperAdapter> = {
+  olx: OlxScraper,
+}
 
 /**
- * Returns all registered scraper adapters.
- * Currently empty — OlxScraper added in Phase 2 Plan 03.
+ * Returns the list of available scraper platform names.
  */
-export function getAvailableScrapers(): ScraperAdapter[] {
-  return []
+export function getAvailableScrapers(): string[] {
+  return Object.keys(SCRAPERS)
+}
+
+/**
+ * Creates and returns a ScraperAdapter for the specified platform.
+ * Throws an error if the platform is not registered.
+ *
+ * @param platform - Platform identifier (e.g. 'olx')
+ * @param config   - ScraperConfig for this scrape run
+ */
+export function createScraper(platform: string, config: ScraperConfig): ScraperAdapter {
+  const Scraper = SCRAPERS[platform]
+  if (!Scraper) {
+    throw new Error(`Unknown scraper platform: "${platform}". Available: ${Object.keys(SCRAPERS).join(', ')}`)
+  }
+  return new Scraper(config)
 }
