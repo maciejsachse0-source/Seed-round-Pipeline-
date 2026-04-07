@@ -45,9 +45,11 @@ export interface EmailEvent {
   sequence_number: number
   sent_at: string | null
   replied_at: string | null
+  opened_at: string | null
   status: EmailEventStatus
   gmail_message_id: string | null
   gmail_thread_id: string | null
+  start_history_id: string | null
   created_at: string
 }
 
