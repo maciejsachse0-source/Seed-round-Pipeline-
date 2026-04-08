@@ -111,7 +111,12 @@ Plans:
   1. Running a Google Maps scrape job for a given location and category produces leads in Supabase using the same adapter interface as OLX
   2. User can view a funnel analytics view showing conversion counts per pipeline stage (new -> contacted -> replied -> interested) broken down by source platform
   3. User can export all interested/approved sellers to a CSV or JSON file from the dashboard
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Google Maps Places API scraper + sourcePlatform schema extension + multi-platform worker + funnel RPC migration + db push
+- [ ] 06-02-PLAN.md — Funnel analytics page + CSV/JSON export API route + dashboard nav update + human verification
+
 **UI hint**: yes
 
 ---
@@ -125,8 +130,8 @@ Plans:
 | 3. Lead Management Dashboard | 3/3 | Complete | 2026-04-06 |
 | 4. Email Infrastructure | 3/3 | Complete | 2026-04-06 |
 | 5. Follow-up Sequences | 2/2 | Complete | 2026-04-08 |
-| 6. Additional Scrapers + Dashboard Enhancements | 0/? | Not started | - |
+| 6. Additional Scrapers + Dashboard Enhancements | 0/2 | Not started | - |
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-08 — Phase 5 complete (2/2 plans, code review fixes applied)*
+*Last updated: 2026-04-08 — Phase 6 planned (2 plans, 2 waves)*
