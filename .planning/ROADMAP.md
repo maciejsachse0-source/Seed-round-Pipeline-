@@ -12,7 +12,7 @@
 - [ ] **Phase 3: Lead Management Dashboard** - Visibility and manual control before any email is sent
 - [ ] **Phase 4: Email Infrastructure** - Gmail sending + reply detection shipped together
 - [x] **Phase 5: Follow-up Sequences** - Automated sequences gated on proven reply detection
-- [ ] **Phase 6: Additional Scrapers + Dashboard Enhancements** - Google Maps scraper, funnel analytics, export
+- [x] **Phase 6: Additional Scrapers + Dashboard Enhancements** - Google Maps scraper, funnel analytics, export
 
 ---
 
@@ -114,8 +114,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Google Maps Places API scraper + sourcePlatform schema extension + multi-platform worker + funnel RPC migration + db push
-- [ ] 06-02-PLAN.md — Funnel analytics page + CSV/JSON export API route + dashboard nav update + human verification
+- [x] 06-01-PLAN.md — Google Maps Places API scraper + sourcePlatform schema extension + multi-platform worker + funnel RPC migration + db push
+- [x] 06-02-PLAN.md — Funnel analytics page + CSV/JSON export API route + dashboard nav update + human verification
 
 **UI hint**: yes
 
@@ -130,8 +130,8 @@ Plans:
 | 3. Lead Management Dashboard | 3/3 | Complete | 2026-04-06 |
 | 4. Email Infrastructure | 3/3 | Complete | 2026-04-06 |
 | 5. Follow-up Sequences | 2/2 | Complete | 2026-04-08 |
-| 6. Additional Scrapers + Dashboard Enhancements | 0/2 | Not started | - |
+| 6. Additional Scrapers + Dashboard Enhancements | 2/2 | Complete | 2026-04-08 |
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-08 — Phase 6 planned (2 plans, 2 waves)*
+*Last updated: 2026-04-08 — Phase 6 complete (2/2 plans, all requirements verified)*
