@@ -17,6 +17,7 @@ export default function DashboardLayout({
         <nav className="space-y-1">
           <NavLink href="/dashboard">Leady</NavLink>
           <NavLink href="/dashboard/templates">Szablony</NavLink>
+          <NavLink href="/dashboard/sequence">Sekwencje</NavLink>
           <NavLink href="/dashboard/scrape">Scraping</NavLink>
         </nav>
       </aside>
