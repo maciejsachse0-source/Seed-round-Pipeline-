@@ -19,6 +19,7 @@ export default function DashboardLayout({
           <NavLink href="/dashboard/templates">Szablony</NavLink>
           <NavLink href="/dashboard/sequence">Sekwencje</NavLink>
           <NavLink href="/dashboard/scrape">Scraping</NavLink>
+          <NavLink href="/dashboard/analytics">Analityka</NavLink>
         </nav>
       </aside>
       <main className="flex-1 p-6 overflow-auto">
