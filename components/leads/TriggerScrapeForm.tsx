@@ -156,20 +156,20 @@ export function TriggerScrapeForm() {
       <form onSubmit={handleSubmit} className="card p-6 space-y-6">
         {/* Categories */}
         <fieldset>
-          <legend className="text-sm font-semibold text-gray-900 mb-3">
+          <legend className="label">
             Kategorie <span className="text-red-500">*</span>
           </legend>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {CATEGORY_OPTIONS.map((opt) => (
-              <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+              <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={selectedCategories.includes(opt.value)}
                   onChange={() => toggleCategory(opt.value)}
                   disabled={isFormDisabled}
-                  className="rounded border-gray-300"
+                  className="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
                 />
-                <span className="text-sm text-gray-700">{opt.label}</span>
+                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{opt.label}</span>
               </label>
             ))}
           </div>
@@ -180,18 +180,18 @@ export function TriggerScrapeForm() {
 
         {/* Cities */}
         <fieldset>
-          <legend className="text-sm font-semibold text-gray-900 mb-3">Miasta</legend>
-          <div className="space-y-2">
+          <legend className="label">Miasta</legend>
+          <div className="space-y-2.5">
             {CITY_OPTIONS.map((opt) => (
-              <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+              <label key={opt.value} className="flex items-center gap-2.5 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={selectedCities.includes(opt.value)}
                   onChange={() => toggleCity(opt.value)}
                   disabled={isFormDisabled}
-                  className="rounded border-gray-300"
+                  className="rounded border-gray-300 text-gray-900 focus:ring-gray-900"
                 />
-                <span className="text-sm text-gray-700">{opt.label}</span>
+                <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{opt.label}</span>
               </label>
             ))}
           </div>
@@ -199,9 +199,9 @@ export function TriggerScrapeForm() {
 
         {/* Keywords */}
         <div>
-          <label htmlFor="keywords" className="block text-sm font-semibold text-gray-900 mb-1">
-            Słowa kluczowe
-            <span className="font-normal text-gray-500 ml-1">(opcjonalne, po przecinku)</span>
+          <label htmlFor="keywords" className="label">
+            Slowa kluczowe
+            <span className="font-normal text-gray-400 ml-1">(opcjonalne, po przecinku)</span>
           </label>
           <input
             id="keywords"
@@ -216,7 +216,7 @@ export function TriggerScrapeForm() {
 
         {/* Max pages */}
         <div>
-          <label htmlFor="maxPages" className="block text-sm font-semibold text-gray-900 mb-1">
+          <label htmlFor="maxPages" className="label">
             Maksymalna liczba stron
           </label>
           <input
@@ -233,7 +233,7 @@ export function TriggerScrapeForm() {
         </div>
 
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+          <div className="p-3.5 bg-red-50 border border-red-200/60 rounded-lg">
             <p className="text-red-600 text-sm">{error}</p>
           </div>
         )}

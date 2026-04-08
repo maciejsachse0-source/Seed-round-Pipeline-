@@ -11,9 +11,9 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen">
       <aside className="w-[260px] shrink-0 bg-gray-950 min-h-screen flex flex-col">
-        <div className="px-5 pt-6 pb-5">
+        <div className="px-5 pt-6 pb-5 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <span className="text-white text-sm font-bold">S</span>
             </div>
             <div>

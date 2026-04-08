@@ -79,7 +79,7 @@ export default async function AnalyticsPage() {
       <div className="card p-6 mb-6">
         {/* Platform legend */}
         {allPlatforms.length > 0 && (
-          <div className="flex gap-4 mb-6 pb-4 border-b border-gray-100">
+          <div className="flex gap-5 mb-6 pb-5 border-b border-gray-100">
             {allPlatforms.map((platform) => (
               <div key={platform} className="flex items-center gap-2">
                 <div className={`w-2.5 h-2.5 rounded-full ${PLATFORM_DOT_COLORS[platform] ?? 'bg-gray-400'}`} />
@@ -89,31 +89,31 @@ export default async function AnalyticsPage() {
           </div>
         )}
 
-        <div className="space-y-5">
-          {FUNNEL_STAGES.map((stage) => {
+        <div className="space-y-6">
+          {FUNNEL_STAGES.map((stage, index) => {
             const stagePlatforms = grouped.get(stage)
             const total = stagePlatforms
               ? Array.from(stagePlatforms.values()).reduce((a, b) => a + b, 0)
               : 0
 
             return (
-              <div key={stage}>
-                <div className="flex items-center justify-between mb-2">
+              <div key={stage} className={index > 0 ? 'pt-1' : ''}>
+                <div className="flex items-center justify-between mb-2.5">
                   <span className="text-sm font-medium text-gray-900">
                     {STAGE_LABELS[stage] ?? stage}
                   </span>
                   <span className="text-sm font-semibold text-gray-900 tabular-nums">{total}</span>
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {allPlatforms.map((platform) => {
                     const count = stagePlatforms?.get(platform) ?? 0
                     const widthPct = count === 0 ? 0 : Math.max(2, Math.round((count / maxCount) * 100))
 
                     return (
                       <div key={platform} className="flex items-center gap-3">
-                        <div className="flex-1 bg-gray-100 rounded-md h-3 overflow-hidden">
+                        <div className="flex-1 bg-gray-100 rounded-full h-2.5 overflow-hidden">
                           <div
-                            className={`h-3 rounded-md transition-all duration-500 ${getPlatformColor(platform)}`}
+                            className={`h-2.5 rounded-full transition-all duration-500 ${getPlatformColor(platform)}`}
                             style={{ width: `${widthPct}%` }}
                           />
                         </div>
@@ -123,7 +123,7 @@ export default async function AnalyticsPage() {
                   })}
                   {allPlatforms.length === 0 && (
                     <div className="flex items-center gap-3">
-                      <div className="flex-1 bg-gray-100 rounded-md h-3" />
+                      <div className="flex-1 bg-gray-100 rounded-full h-2.5" />
                       <span className="text-xs text-gray-400 w-8 text-right">0</span>
                     </div>
                   )}

@@ -29,11 +29,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-8">
-        <h1 className="page-title">Leady</h1>
-        <span className="badge bg-gray-100 text-gray-600">
-          {count}
-        </span>
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-3">
+          <h1 className="page-title">Leady</h1>
+          <span className="badge bg-gray-100 text-gray-600">
+            {count}
+          </span>
+        </div>
       </div>
 
       <LeadsFilters />

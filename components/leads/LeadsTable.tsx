@@ -153,10 +153,10 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
 
   if (leads.length === 0) {
     return (
-      <div className="text-center py-16 text-gray-400">
-        <div className="text-3xl mb-3 opacity-30">{'\u25A6'}</div>
+      <div className="text-center py-20 text-gray-400">
+        <div className="text-4xl mb-4 opacity-20">{'\u25A6'}</div>
         <p className="text-sm font-medium text-gray-500">Brak leadow</p>
-        <p className="text-xs mt-1">Zmien filtry lub uruchom scraping, aby dodac leady.</p>
+        <p className="text-xs mt-1.5 text-gray-400">Zmien filtry lub uruchom scraping, aby dodac leady.</p>
       </div>
     )
   }
@@ -166,11 +166,11 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
       <table className="w-full text-sm">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b border-gray-200">
+            <tr key={headerGroup.id} className="border-b border-gray-200 bg-gray-50/80">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider first:rounded-tl-xl last:rounded-tr-xl"
                 >
                   {header.isPlaceholder
                     ? null

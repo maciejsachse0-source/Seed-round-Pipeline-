@@ -138,9 +138,11 @@ export default function SequencePage() {
         )}
       </div>
 
-      <div className="mt-6 flex items-start gap-3 p-4 bg-amber-50/50 border border-amber-200/50 rounded-xl">
-        <span className="text-amber-500 mt-0.5">!</span>
-        <p className="text-sm text-amber-700">
+      <div className="mt-6 flex items-start gap-3 p-4 bg-amber-50 border border-amber-200/60 rounded-xl">
+        <div className="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+          <span className="text-amber-600 text-xs font-bold">!</span>
+        </div>
+        <p className="text-sm text-amber-700 leading-relaxed">
           Upewnij sie, ze aktywne szablony emaili istnieja dla kazdej pozycji sekwencji (1, 2, ...) w zakladce Szablony.
         </p>
       </div>
