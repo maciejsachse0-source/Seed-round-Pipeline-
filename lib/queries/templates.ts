@@ -1,28 +1,10 @@
 // lib/queries/templates.ts
-// Query helpers and token substitution for email templates
+// Query helpers for email templates (server-only — uses createClient)
 import { createClient } from '@/lib/supabase/server'
 import type { EmailTemplate } from '@/lib/db/types'
 
-/**
- * Substitute {name}, {city}, {category} tokens in a template string.
- * Tokens without matching data are left as-is.
- */
-export function substituteTokens(
-  template: string,
-  data: { name?: string; city?: string; category?: string }
-): string {
-  let result = template
-  if (data.name !== undefined) {
-    result = result.replace(/\{name\}/g, data.name)
-  }
-  if (data.city !== undefined) {
-    result = result.replace(/\{city\}/g, data.city)
-  }
-  if (data.category !== undefined) {
-    result = result.replace(/\{category\}/g, data.category)
-  }
-  return result
-}
+// Re-export for server-side callers that previously imported from here
+export { substituteTokens } from './substitute-tokens'
 
 export async function fetchTemplates(): Promise<EmailTemplate[]> {
   const supabase = await createClient()

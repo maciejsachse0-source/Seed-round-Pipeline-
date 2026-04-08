@@ -1,7 +1,7 @@
 'use client'
 // components/templates/TemplatePreview.tsx
 // Live token substitution preview — plain text only (T-03-10: no dangerouslySetInnerHTML)
-import { substituteTokens } from '@/lib/queries/templates'
+import { substituteTokens } from '@/lib/queries/substitute-tokens'
 
 const SAMPLE = { name: 'Anna Kowalska', city: 'Kraków', category: 'biżuteria' }
 
