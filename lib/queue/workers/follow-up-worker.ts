@@ -79,22 +79,27 @@ export async function registerFollowUpWorker(): Promise<void> {
     }
 
     // --- Send follow-up email ---
-    const result = await sendColdEmail(lead, template, {
-      targetStatus: LeadStatus.FOLLOWED_UP,
-      sequenceNumber: sequenceStep,
-    })
+    try {
+      const result = await sendColdEmail(lead, template, {
+        targetStatus: LeadStatus.FOLLOWED_UP,
+        sequenceNumber: sequenceStep,
+      })
 
-    if (result.success) {
-      console.log(
-        `[follow-up-worker] sent follow-up step ${sequenceStep} to ${lead.email}, gmailMessageId=${result.gmailMessageId}`
-      )
-      // Schedule next step in the chain
-      const config = await getSequenceConfigForScheduler()
-      await scheduleFollowUp(leadId, sequenceStep + 1, config)
-    } else {
-      console.log(
-        `[follow-up-worker] follow-up step ${sequenceStep} skipped for ${leadId} — skipReason=${result.skipReason}`
-      )
+      if (result.success) {
+        console.log(
+          `[follow-up-worker] sent follow-up step ${sequenceStep} to ${lead.email}, gmailMessageId=${result.gmailMessageId}`
+        )
+        // Schedule next step in the chain
+        const config = await getSequenceConfigForScheduler()
+        await scheduleFollowUp(leadId, sequenceStep + 1, config)
+      } else {
+        console.log(
+          `[follow-up-worker] follow-up step ${sequenceStep} skipped for ${leadId} — skipReason=${result.skipReason}`
+        )
+      }
+    } catch (err) {
+      console.error(`[follow-up-worker] sendColdEmail threw for lead ${leadId} step ${sequenceStep}:`, err)
+      throw err
     }
   })
 

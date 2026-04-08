@@ -28,13 +28,13 @@ export async function getSequenceConfig(): Promise<SequenceConfig> {
 
     if (error || !data) {
       console.warn('[sequence-config] DB read failed — using defaults:', error?.message)
-      return DEFAULT_ROW
+      return { ...DEFAULT_ROW, updated_at: new Date().toISOString() }
     }
 
     return data as SequenceConfig
   } catch (err) {
     console.warn('[sequence-config] getSequenceConfig threw — using defaults:', err)
-    return DEFAULT_ROW
+    return { ...DEFAULT_ROW, updated_at: new Date().toISOString() }
   }
 }
 
@@ -50,7 +50,7 @@ export async function updateSequenceConfig(
   intervalDays: number
 ): Promise<void> {
   const supabase = await createClient()
-  await supabase
+  const { error } = await supabase
     .from('sequence_config')
     .upsert({
       id: 1,
@@ -58,4 +58,8 @@ export async function updateSequenceConfig(
       interval_days: intervalDays,
       updated_at: new Date().toISOString(),
     })
+
+  if (error) {
+    throw new Error(`Failed to update sequence_config: ${error.message}`)
+  }
 }

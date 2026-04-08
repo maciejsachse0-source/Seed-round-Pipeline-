@@ -22,7 +22,7 @@ export const VALID_TRANSITIONS: Record<LeadStatus, LeadStatus[]> = {
   [LeadStatus.SCORED]:      [LeadStatus.APPROVED, LeadStatus.REJECTED, LeadStatus.OPTED_OUT],
   [LeadStatus.APPROVED]:    [LeadStatus.CONTACTED, LeadStatus.OPTED_OUT],
   [LeadStatus.CONTACTED]:   [LeadStatus.FOLLOWED_UP, LeadStatus.REPLIED, LeadStatus.OPTED_OUT],
-  [LeadStatus.FOLLOWED_UP]: [LeadStatus.REPLIED, LeadStatus.OPTED_OUT],
+  [LeadStatus.FOLLOWED_UP]: [LeadStatus.FOLLOWED_UP, LeadStatus.REPLIED, LeadStatus.OPTED_OUT],
   [LeadStatus.REPLIED]:     [LeadStatus.INTERESTED, LeadStatus.REJECTED, LeadStatus.OPTED_OUT],
   [LeadStatus.INTERESTED]:  [LeadStatus.OPTED_OUT],
   [LeadStatus.REJECTED]:    [],
