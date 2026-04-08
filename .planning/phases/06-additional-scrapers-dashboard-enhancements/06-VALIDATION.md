@@ -38,10 +38,10 @@ created: 2026-04-08
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 06-01-01 | 01 | 1 | SCRP-02 | T-06-01 | API key never exposed in client code | unit | `npx vitest run tests/scrapers/google-maps` | ❌ W0 | ⬜ pending |
-| 06-01-02 | 01 | 1 | SCRP-02 | — | N/A | unit | `npx vitest run tests/scrapers/google-maps` | ❌ W0 | ⬜ pending |
-| 06-02-01 | 02 | 2 | DASH-04 | — | N/A | unit | `npx vitest run tests/queries/funnel` | ❌ W0 | ⬜ pending |
-| 06-02-02 | 02 | 2 | DASH-05 | — | N/A | unit | `npx vitest run tests/api/export` | ❌ W0 | ⬜ pending |
+| 06-01-01 | 01 | 1 | SCRP-02 | T-06-01 | API key never exposed in client code | unit | `npx vitest run tests/scrapers/google-maps-scraper.test.ts` | ❌ W0 | ⬜ pending |
+| 06-01-02 | 01 | 1 | SCRP-02 | — | N/A | unit | `npx vitest run tests/scrapers/google-maps-scraper.test.ts` | ❌ W0 | ⬜ pending |
+| 06-02-01 | 02 | 2 | DASH-04 | — | N/A | unit | `npx vitest run tests/queries/analytics.test.ts` | ❌ W0 | ⬜ pending |
+| 06-02-02 | 02 | 2 | DASH-05 | — | N/A | unit | `npx vitest run tests/api/export-route.test.ts` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -49,9 +49,9 @@ created: 2026-04-08
 
 ## Wave 0 Requirements
 
-- [ ] `tests/scrapers/google-maps.test.ts` — stubs for SCRP-02
-- [ ] `tests/queries/funnel.test.ts` — stubs for DASH-04
-- [ ] `tests/api/export.test.ts` — stubs for DASH-05
+- [ ] `tests/scrapers/google-maps-scraper.test.ts` — stubs for SCRP-02
+- [ ] `tests/queries/analytics.test.ts` — stubs for DASH-04
+- [ ] `tests/api/export-route.test.ts` — stubs for DASH-05
 
 *Existing infrastructure (vitest, test helpers) covers framework requirements.*
 
