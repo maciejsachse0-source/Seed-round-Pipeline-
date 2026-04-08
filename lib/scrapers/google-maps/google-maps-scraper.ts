@@ -49,7 +49,7 @@ function extractCity(formattedAddress: string | undefined): string | null {
 function placeToRawLead(place: PlaceResult): RawLead {
   const name = place.displayName?.text ?? null
   const sourceUrl = place.websiteUri
-    ?? `https://maps.google.com/?q=${encodeURIComponent(name ?? '')}`
+    ?? `https://maps.google.com/?q=${encodeURIComponent(name ?? place.formattedAddress ?? 'unknown')}`
 
   let description: string | null = null
   if (place.rating != null && place.userRatingCount != null) {
@@ -90,6 +90,11 @@ export class GoogleMapsScraper implements ScraperAdapter {
   constructor(private config: ScraperConfig) {}
 
   async run(config: ScraperConfig): Promise<RawLead[]> {
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY
+    if (!apiKey) {
+      throw new Error('GOOGLE_MAPS_API_KEY is not set')
+    }
+
     const leads: RawLead[] = []
     const keywords = config.keywords.length > 0 ? config.keywords : ['handmade']
     const cities = config.cities.length > 0 ? config.cities : ['']
@@ -104,7 +109,7 @@ export class GoogleMapsScraper implements ScraperAdapter {
           const response = await got.post(PLACES_ENDPOINT, {
             headers: {
               'Content-Type': 'application/json',
-              'X-Goog-Api-Key': process.env.GOOGLE_MAPS_API_KEY!,
+              'X-Goog-Api-Key': apiKey,
               'X-Goog-FieldMask': FIELD_MASK,
             },
             json: {

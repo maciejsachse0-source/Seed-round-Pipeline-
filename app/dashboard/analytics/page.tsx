@@ -82,7 +82,7 @@ export default async function AnalyticsPage() {
                 <div className="space-y-1">
                   {allPlatforms.map((platform) => {
                     const count = stagePlatforms?.get(platform) ?? 0
-                    const widthPct = Math.max(1, Math.round((count / maxCount) * 100))
+                    const widthPct = count === 0 ? 0 : Math.max(1, Math.round((count / maxCount) * 100))
 
                     return (
                       <div key={platform} className="flex items-center gap-2">

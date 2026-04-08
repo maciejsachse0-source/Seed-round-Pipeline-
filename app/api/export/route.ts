@@ -12,11 +12,18 @@ export async function GET(request: Request) {
   const format = searchParams.get('format') === 'json' ? 'json' : 'csv'
 
   const supabase = await createClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('leads')
     .select('*')
     .in('status', ['interested', 'approved'])
     .order('created_at', { ascending: false })
+
+  if (error) {
+    return new Response(JSON.stringify({ error: 'Failed to fetch leads' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
   const leads = data ?? []
 

@@ -6,7 +6,7 @@
 -- Called via supabase.rpc('get_funnel_counts') from the dashboard analytics page.
 CREATE OR REPLACE FUNCTION get_funnel_counts()
 RETURNS TABLE(status text, source_platform text, count bigint)
-LANGUAGE sql SECURITY DEFINER
+LANGUAGE sql SECURITY DEFINER SET search_path = public
 AS $$
   SELECT status, source_platform, COUNT(*)::bigint
   FROM leads

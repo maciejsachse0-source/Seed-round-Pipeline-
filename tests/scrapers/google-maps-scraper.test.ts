@@ -30,6 +30,9 @@ vi.mock('@/lib/scrapers/olx/olx-scraper', async (importOriginal) => {
   }
 })
 
+// Set API key for tests (got is mocked, so no real API calls)
+process.env.GOOGLE_MAPS_API_KEY = 'test-api-key'
+
 const baseValidLead = {
   sourceUrl: 'https://example.com/shop',
   name: 'Test Shop',
