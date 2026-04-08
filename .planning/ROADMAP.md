@@ -11,7 +11,7 @@
 - [x] **Phase 2: OLX Scraper + Data Processing** - End-to-end scrape pipeline with normalization, dedup, and lead scoring
 - [ ] **Phase 3: Lead Management Dashboard** - Visibility and manual control before any email is sent
 - [ ] **Phase 4: Email Infrastructure** - Gmail sending + reply detection shipped together
-- [ ] **Phase 5: Follow-up Sequences** - Automated sequences gated on proven reply detection
+- [x] **Phase 5: Follow-up Sequences** - Automated sequences gated on proven reply detection
 - [ ] **Phase 6: Additional Scrapers + Dashboard Enhancements** - Google Maps scraper, funnel analytics, export
 
 ---
@@ -100,8 +100,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Follow-up sequencer core: migration + sendColdEmail targetStatus fix + scheduling library + follow-up worker + tests
-- [ ] 05-02-PLAN.md — Sequence config API + dashboard UI page + db push + SCRP-06 verification + human checkpoint
+- [x] 05-01-PLAN.md — Follow-up sequencer core: migration + sendColdEmail targetStatus fix + scheduling library + follow-up worker + tests
+- [x] 05-02-PLAN.md — Sequence config API + dashboard UI page + db push + SCRP-06 verification + human checkpoint
 
 ### Phase 6: Additional Scrapers + Dashboard Enhancements
 **Goal**: The pipeline covers a second lead source (Google Maps) and the dashboard provides funnel analytics and data export for operational decision-making.
@@ -124,9 +124,9 @@ Plans:
 | 2. OLX Scraper + Data Processing | 4/4 | Complete | 2026-04-06 |
 | 3. Lead Management Dashboard | 3/3 | Complete | 2026-04-06 |
 | 4. Email Infrastructure | 3/3 | Complete | 2026-04-06 |
-| 5. Follow-up Sequences | 0/2 | Planning complete | - |
+| 5. Follow-up Sequences | 2/2 | Complete | 2026-04-08 |
 | 6. Additional Scrapers + Dashboard Enhancements | 0/? | Not started | - |
 
 ---
 *Roadmap created: 2026-04-06*
-*Last updated: 2026-04-07 — Phase 5 plans created (2 plans, 2 waves)*
+*Last updated: 2026-04-08 — Phase 5 complete (2/2 plans, code review fixes applied)*
