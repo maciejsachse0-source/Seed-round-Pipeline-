@@ -40,11 +40,11 @@ export function LeadsFilters() {
   }
 
   return (
-    <div className="flex flex-row gap-3 items-center mb-4">
+    <div className="flex flex-row gap-2.5 items-center mb-5">
       <select
         value={status}
         onChange={handleStatusChange}
-        className="px-3 py-2 border border-gray-300 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input-field w-auto"
       >
         {Object.entries(STATUS_LABELS).map(([value, label]) => (
           <option key={value} value={value}>
@@ -55,10 +55,10 @@ export function LeadsFilters() {
 
       <input
         type="text"
-        placeholder="Szukaj (imię, email, miasto)..."
+        placeholder="Szukaj (imie, email, miasto)..."
         defaultValue={search}
         onChange={handleSearchChange}
-        className="px-3 py-2 border border-gray-300 rounded text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="input-field w-80"
       />
     </div>
   )

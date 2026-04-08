@@ -23,12 +23,12 @@ function ScoreBadge({ score }: { score: number | null }) {
   if (score === null) return <span className="text-gray-400 text-xs">—</span>
   const color =
     score >= 70
-      ? 'text-green-700 bg-green-100'
+      ? 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-600/10'
       : score >= 40
-      ? 'text-yellow-700 bg-yellow-100'
-      : 'text-red-700 bg-red-100'
+      ? 'text-amber-700 bg-amber-50 ring-1 ring-amber-600/10'
+      : 'text-red-700 bg-red-50 ring-1 ring-red-600/10'
   return (
-    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${color}`}>
+    <span className={`badge tabular-nums ${color}`}>
       {score}
     </span>
   )
@@ -90,7 +90,7 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
       cell: ({ row }) => (
         <Link
           href={`/dashboard/leads/${row.original.id}`}
-          className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
+          className="text-gray-900 hover:text-gray-600 font-medium transition-colors"
         >
           {row.original.name ?? <span className="text-gray-400 italic">Bez nazwy</span>}
         </Link>
@@ -153,9 +153,10 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
 
   if (leads.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500">
-        <p className="text-sm">Brak leadów</p>
-        <p className="text-xs mt-1">Zmień filtry lub uruchom scraping, aby dodać leady.</p>
+      <div className="text-center py-16 text-gray-400">
+        <div className="text-3xl mb-3 opacity-30">{'\u25A6'}</div>
+        <p className="text-sm font-medium text-gray-500">Brak leadow</p>
+        <p className="text-xs mt-1">Zmien filtry lub uruchom scraping, aby dodac leady.</p>
       </div>
     )
   }
@@ -163,13 +164,13 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <thead className="bg-gray-50">
+        <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <tr key={headerGroup.id} className="border-b border-gray-200">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-3 text-left font-medium text-gray-500"
+                  className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
                   {header.isPlaceholder
                     ? null
@@ -181,9 +182,9 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50">
+            <tr key={row.id} className="hover:bg-gray-50/50 transition-colors">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-3 border-t">
+                <td key={cell.id} className="px-4 py-3.5 border-t border-gray-100">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

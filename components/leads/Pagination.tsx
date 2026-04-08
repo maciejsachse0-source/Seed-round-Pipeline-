@@ -14,25 +14,25 @@ export function Pagination({ currentPage, totalPages }: PaginationProps) {
   if (totalPages <= 1) return null
 
   return (
-    <div className="flex items-center gap-2 justify-center mt-4">
+    <div className="flex items-center gap-2 justify-center mt-5">
       <button
         onClick={() => setPage(currentPage - 1)}
         disabled={currentPage <= 1}
-        className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        className="btn-secondary text-xs px-3 py-1.5"
       >
-        &larr; Poprzednia
+        {'\u2190'} Poprzednia
       </button>
 
-      <span className="text-sm text-gray-600 px-2">
-        Strona {currentPage} z {totalPages}
+      <span className="text-xs text-gray-500 px-3 tabular-nums">
+        {currentPage} / {totalPages}
       </span>
 
       <button
         onClick={() => setPage(currentPage + 1)}
         disabled={currentPage >= totalPages}
-        className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+        className="btn-secondary text-xs px-3 py-1.5"
       >
-        Następna &rarr;
+        Nastepna {'\u2192'}
       </button>
     </div>
   )

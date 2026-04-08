@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import './globals.css'
+
+const inter = Inter({ subsets: ['latin', 'latin-ext'] })
 
 export const metadata: Metadata = {
   title: 'Seed Round Pipeline',
@@ -14,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pl">
-      <body className="min-h-screen bg-gray-50 text-gray-900">
+      <body className={`${inter.className} min-h-screen bg-gray-50/50 text-gray-900`}>
         <NuqsAdapter>{children}</NuqsAdapter>
       </body>
     </html>

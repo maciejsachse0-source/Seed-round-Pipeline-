@@ -29,16 +29,16 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Leady</h1>
-        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+      <div className="flex items-center gap-3 mb-8">
+        <h1 className="page-title">Leady</h1>
+        <span className="badge bg-gray-100 text-gray-600">
           {count}
         </span>
       </div>
 
       <LeadsFilters />
 
-      <div className="bg-white rounded border shadow-sm">
+      <div className="card overflow-hidden">
         <LeadsTable leads={leads} rowCount={count} />
       </div>
 
