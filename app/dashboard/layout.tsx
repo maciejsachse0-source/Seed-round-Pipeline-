@@ -33,11 +33,19 @@ export default function DashboardLayout({
           <NavLink href="/dashboard/scrape" icon="download">Scraping</NavLink>
         </nav>
         <div className="px-5 py-4 border-t border-white/5">
-          <p className="text-[11px] text-gray-600">v1.0 &middot; 6/6 faz</p>
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] text-gray-600">v1.0</p>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <p className="text-[11px] text-gray-500">6/6 faz</p>
+            </div>
+          </div>
         </div>
       </aside>
-      <main className="flex-1 bg-gray-50 p-8 overflow-auto">
-        {children}
+      <main className="flex-1 bg-gray-50 overflow-auto">
+        <div className="max-w-7xl mx-auto px-8 py-8">
+          {children}
+        </div>
       </main>
     </div>
   )

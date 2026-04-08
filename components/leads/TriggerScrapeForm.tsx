@@ -179,6 +179,7 @@ export function TriggerScrapeForm() {
         </fieldset>
 
         {/* Cities */}
+        <div className="border-t border-gray-100" />
         <fieldset>
           <legend className="label">Miasta</legend>
           <div className="space-y-2.5">
@@ -198,6 +199,7 @@ export function TriggerScrapeForm() {
         </fieldset>
 
         {/* Keywords */}
+        <div className="border-t border-gray-100" />
         <div>
           <label htmlFor="keywords" className="label">
             Slowa kluczowe

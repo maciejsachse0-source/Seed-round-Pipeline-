@@ -84,8 +84,12 @@ export default function SequencePage() {
         <p className="page-subtitle">Automatyczne follow-upy po cold emailu. Odpowiedz lub opt-out zatrzymuje sekwencje.</p>
       </div>
 
-      <div className="card p-6">
-        <form onSubmit={handleSave} className="space-y-5">
+      <div className="card">
+        <div className="px-6 py-4 border-b border-gray-100">
+          <h2 className="text-sm font-semibold text-gray-900">Konfiguracja</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Ustaw parametry automatycznych follow-upow</p>
+        </div>
+        <form onSubmit={handleSave} className="p-6 space-y-5">
           <div>
             <label htmlFor="maxFollowUps" className="label">
               Liczba follow-upow
@@ -132,9 +136,11 @@ export default function SequencePage() {
         </form>
 
         {updatedAt && (
-          <p className="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
-            Ostatnia aktualizacja: {new Date(updatedAt).toLocaleString('pl-PL')}
-          </p>
+          <div className="px-6 py-3 border-t border-gray-100 bg-gray-50/50 rounded-b-xl">
+            <p className="text-xs text-gray-400">
+              Ostatnia aktualizacja: {new Date(updatedAt).toLocaleString('pl-PL')}
+            </p>
+          </div>
         )}
       </div>
 

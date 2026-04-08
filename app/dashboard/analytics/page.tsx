@@ -67,19 +67,19 @@ export default async function AnalyticsPage() {
           <p className="page-subtitle">Konwersje per etap i platforma</p>
         </div>
         <div className="flex gap-2">
-          <a href="/api/export?format=csv" className="btn-secondary text-xs gap-1.5">
-            <span className="opacity-50">{'\u2913'}</span> CSV
+          <a href="/api/export?format=csv" className="btn-secondary text-xs px-3 py-2 gap-1.5">
+            <span className="opacity-40">{'\u2913'}</span> CSV
           </a>
-          <a href="/api/export?format=json" className="btn-secondary text-xs gap-1.5">
-            <span className="opacity-50">{'\u2913'}</span> JSON
+          <a href="/api/export?format=json" className="btn-secondary text-xs px-3 py-2 gap-1.5">
+            <span className="opacity-40">{'\u2913'}</span> JSON
           </a>
         </div>
       </div>
 
-      <div className="card p-6 mb-6">
+      <div className="card mb-6">
         {/* Platform legend */}
         {allPlatforms.length > 0 && (
-          <div className="flex gap-5 mb-6 pb-5 border-b border-gray-100">
+          <div className="flex gap-5 px-6 pt-5 pb-4 border-b border-gray-100">
             {allPlatforms.map((platform) => (
               <div key={platform} className="flex items-center gap-2">
                 <div className={`w-2.5 h-2.5 rounded-full ${PLATFORM_DOT_COLORS[platform] ?? 'bg-gray-400'}`} />
@@ -89,7 +89,7 @@ export default async function AnalyticsPage() {
           </div>
         )}
 
-        <div className="space-y-6">
+        <div className="p-6 space-y-6">
           {FUNNEL_STAGES.map((stage, index) => {
             const stagePlatforms = grouped.get(stage)
             const total = stagePlatforms
