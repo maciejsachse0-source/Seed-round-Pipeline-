@@ -83,6 +83,11 @@ export async function registerEmailWorker(): Promise<void> {
       console.log(
         `[email-worker] job ${job.id}: sent to ${lead.email}, gmailMessageId=${result.gmailMessageId}`
       )
+      // Schedule first follow-up in sequence chain (MAIL-03)
+      // Dynamic import to avoid circular dependency issues
+      const { getSequenceConfigForScheduler, scheduleFollowUp } = await import('@/lib/email/follow-up')
+      const config = await getSequenceConfigForScheduler()
+      await scheduleFollowUp(leadId, 1, config)
     } else {
       console.log(
         `[email-worker] job ${job.id}: skipped — skipReason=${result.skipReason}`

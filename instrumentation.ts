@@ -14,6 +14,8 @@ export async function register() {
       await registerEmailWorker()
       const { registerReplyCheckWorker } = await import('./lib/queue/workers/reply-check-worker')
       await registerReplyCheckWorker()
+      const { registerFollowUpWorker } = await import('./lib/queue/workers/follow-up-worker')
+      await registerFollowUpWorker()
     } catch (err) {
       // Log but don't crash the server on startup — pg-boss will retry
       // In production, this means scrape/email jobs won't fire until DATABASE_URL is set
