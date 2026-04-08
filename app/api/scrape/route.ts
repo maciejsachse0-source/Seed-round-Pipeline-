@@ -1,34 +1,51 @@
 // app/api/scrape/route.ts
 // POST endpoint to dispatch a scrape job to pg-boss.
 // Creates a scrape_jobs record first, then dispatches the pg-boss job with the same ID.
-// Security: validates config.categories is non-empty to prevent empty scrape runs (T-02-11).
+// Security: validates platform against registered scrapers allowlist (T-06-02).
+// Security: validates config.categories is non-empty for OLX to prevent empty scrape runs (T-02-11).
 // Auth: single-user tool — Phase 2 has no auth; Phase 3 dashboard adds auth (T-02-10 accepted).
 
 import { NextResponse } from 'next/server'
 import { getBoss } from '@/lib/queue/boss'
 import { createClient } from '@/lib/supabase/server'
+import { getAvailableScrapers } from '@/lib/scrapers/index'
 import type { ScraperConfig } from '@/lib/scrapers/types'
 
 /**
  * POST /api/scrape
  *
- * Accepts a ScraperConfig JSON body.
+ * Accepts JSON body with:
+ *   - platform: string (optional, defaults to 'olx')
+ *   - config: ScraperConfig (or body itself as config for backward compat)
+ *
  * Creates a scrape_jobs record with status 'pending', then dispatches a
- * pg-boss 'scrape-olx' job using the scrape_jobs.id as the job ID so
+ * pg-boss 'scrape-{platform}' job using the scrape_jobs.id as the job ID so
  * the worker can update the same record with results.
  *
  * Returns: 201 { jobId: string } on success
- *          400 { error: string }  when categories is missing or empty
+ *          400 { error: string }  when platform unknown or categories missing
  *          500 { error: string }  on internal errors
  */
 export async function POST(request: Request) {
   try {
-    const config: ScraperConfig = await request.json()
+    const body = await request.json()
+    const platform: string = body.platform ?? 'olx'
+    // Backward compat: if no .config wrapper, treat whole body as config
+    const config: ScraperConfig = body.config ?? body
+
+    // Validate platform against registered scrapers (T-06-02)
+    const available = getAvailableScrapers()
+    if (!available.includes(platform)) {
+      return NextResponse.json(
+        { error: `Unknown platform: "${platform}". Available: ${available.join(', ')}` },
+        { status: 400 }
+      )
+    }
 
     // Validate required fields (T-02-11: input validation)
-    if (!config.categories?.length) {
+    if (!config.categories?.length && platform === 'olx') {
       return NextResponse.json(
-        { error: 'categories is required and must not be empty' },
+        { error: 'categories is required and must not be empty for OLX scraping' },
         { status: 400 }
       )
     }
@@ -40,7 +57,7 @@ export async function POST(request: Request) {
     const { data: job, error: insertError } = await supabase
       .from('scrape_jobs')
       .insert({
-        platform: 'olx',
+        platform,
         config: config as unknown as Record<string, unknown>,
         status: 'pending',
       })
@@ -56,7 +73,7 @@ export async function POST(request: Request) {
     }
 
     // Dispatch pg-boss job using the scrape_jobs.id so worker can update the same row
-    await boss.send('scrape-olx', config, { id: job.id })
+    await boss.send(`scrape-${platform}`, config, { id: job.id })
 
     return NextResponse.json({ jobId: job.id }, { status: 201 })
   } catch (err) {
