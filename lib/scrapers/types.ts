@@ -17,7 +17,7 @@ export interface ScraperConfig {
 
 export interface RawLead {
   sourceUrl: string
-  sourcePlatform: 'olx'
+  sourcePlatform: 'olx' | 'google_maps'
   name: string | null
   phone: string | null
   email: string | null          // OLX: almost always null — in-platform messaging only
@@ -36,7 +36,7 @@ export interface RawLead {
 // Enforces the trust boundary: OLX HTML -> scraper (T-02-01).
 export const RawLeadSchema = z.object({
   sourceUrl: z.string().url(),
-  sourcePlatform: z.literal('olx'),
+  sourcePlatform: z.enum(['olx', 'google_maps']),
   name: z.string().nullable(),
   phone: z.string().nullable(),
   email: z.string().email().nullable(),
