@@ -153,7 +153,7 @@ export function TriggerScrapeForm() {
 
   return (
     <div className="max-w-2xl">
-      <form onSubmit={handleSubmit} className="bg-white border rounded-lg p-6 shadow-sm space-y-6">
+      <form onSubmit={handleSubmit} className="card p-6 space-y-6">
         {/* Categories */}
         <fieldset>
           <legend className="text-sm font-semibold text-gray-900 mb-3">
@@ -209,7 +209,7 @@ export function TriggerScrapeForm() {
             value={keywords}
             onChange={(e) => setKeywords(e.target.value)}
             disabled={isFormDisabled}
-            className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50"
+            className="input-field disabled:bg-gray-50"
             placeholder="np. handmade, rekodzielniczy"
           />
         </div>
@@ -227,7 +227,7 @@ export function TriggerScrapeForm() {
             disabled={isFormDisabled}
             min={1}
             max={10}
-            className="w-24 border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50"
+            className="input-field w-24 disabled:bg-gray-50"
           />
           <p className="text-xs text-gray-500 mt-1">Min 1, max 10 stron na kombinację kategorii i miasta</p>
         </div>
@@ -241,7 +241,7 @@ export function TriggerScrapeForm() {
         <button
           type="submit"
           disabled={isFormDisabled}
-          className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="btn-primary"
         >
           {isSubmitting ? 'Uruchamianie…' : 'Uruchom scraping'}
         </button>
@@ -249,7 +249,7 @@ export function TriggerScrapeForm() {
 
       {/* Job status display */}
       {jobStatus && (
-        <div className="mt-6 bg-white border rounded-lg p-6 shadow-sm">
+        <div className="mt-6 card p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-900">Status zadania</h2>
             <span
@@ -301,7 +301,7 @@ export function TriggerScrapeForm() {
             <div className="mt-4">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
+                className="btn-primary"
               >
                 Przejdź do leadów
               </Link>

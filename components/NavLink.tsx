@@ -24,14 +24,14 @@ export function NavLink({ href, icon, children }: NavLinkProps) {
   return (
     <Link
       href={href}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-colors ${
+      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all duration-150 ${
         isActive
-          ? 'bg-gray-900 text-white font-medium'
-          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+          ? 'bg-white/10 text-white font-medium'
+          : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
       }`}
     >
       {icon && (
-        <span className={`w-5 text-center text-sm ${isActive ? 'opacity-100' : 'opacity-50'}`}>
+        <span className={`w-5 text-center text-sm ${isActive ? 'text-white' : 'text-gray-500'}`}>
           {ICONS[icon] ?? ''}
         </span>
       )}
