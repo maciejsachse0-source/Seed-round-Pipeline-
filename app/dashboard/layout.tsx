@@ -27,8 +27,7 @@ export default function DashboardLayout({
           <NavLink href="/dashboard" icon="grid">Leady</NavLink>
           <NavLink href="/dashboard/analytics" icon="chart">Analityka</NavLink>
           <p className="px-3 pt-5 pb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Outreach</p>
-          <NavLink href="/dashboard/templates" icon="mail">Szablony</NavLink>
-          <NavLink href="/dashboard/sequence" icon="repeat">Sekwencje</NavLink>
+          <NavLink href="/dashboard/sequence" icon="mail">Sekwencja</NavLink>
           <p className="px-3 pt-5 pb-2 text-[10px] font-semibold text-gray-500 uppercase tracking-widest">Pozyskiwanie</p>
           <NavLink href="/dashboard/scrape" icon="download">Scraping</NavLink>
         </nav>
