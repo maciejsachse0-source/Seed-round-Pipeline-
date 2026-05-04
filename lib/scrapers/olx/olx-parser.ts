@@ -1,7 +1,6 @@
 // lib/scrapers/olx/olx-parser.ts
-// Pure Cheerio parsing functions for OLX.pl HTML.
-// No side effects — these functions only read HTML and return structured data.
-// All selector access goes through OLX_SELECTORS for easy maintenance (T-02-06).
+// OLX.pl parsing — extracts structured data from __PRERENDERED_STATE__ JSON
+// embedded in OLX detail pages. Falls back to Cheerio for listing index pages.
 
 import * as cheerio from 'cheerio'
 import { OLX_SELECTORS } from './olx-selectors'
@@ -27,14 +26,10 @@ export function parseListingIndex(html: string): Array<{ url: string; title: str
   $(OLX_SELECTORS.listingCard).each((_, card) => {
     const $card = $(card)
     const $link = $card.find('a').first()
-    const $title = $card.find('h6').first()
 
     const href = $link.attr('href')
-    const title = $title.text().trim()
-
     if (!href) return
 
-    // Normalize URL — prepend base if relative
     let url = href
     if (href.startsWith('/')) {
       url = `${OLX_BASE}${href}`
@@ -42,56 +37,56 @@ export function parseListingIndex(html: string): Array<{ url: string; title: str
       url = `${OLX_BASE}/${href}`
     }
 
-    // Remove duplicate base if already absolute with OLX domain
-    if (url.startsWith(`${OLX_BASE}${OLX_BASE}`)) {
-      url = url.slice(OLX_BASE.length)
-    }
-
-    results.push({ url, title })
+    results.push({ url, title: '' })
   })
 
   return results
 }
 
 /**
- * Parses an OLX listing detail page.
+ * Extracts the __PRERENDERED_STATE__ JSON from an OLX detail page.
+ * OLX embeds all ad data as a double-escaped JSON string in a script tag.
+ */
+function extractPrerenderedState(html: string): Record<string, unknown> | null {
+  const m = html.match(/window\.__PRERENDERED_STATE__\s*=\s*"(.*?)";/)
+  if (!m) return null
+  try {
+    const decoded = JSON.parse('"' + m[1] + '"')
+    return JSON.parse(decoded) as Record<string, unknown>
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Parses an OLX listing detail page using __PRERENDERED_STATE__ JSON.
  * Returns a Partial<RawLead> with all extractable fields populated.
  */
-export function parseListingDetail(html: string): Partial<RawLead> {
-  const $ = cheerio.load(html)
+export function parseListingDetail(html: string): Partial<RawLead> & { thumbnailUrl?: string } {
+  const state = extractPrerenderedState(html)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ad = (state as any)?.ad?.ad
 
-  // --- Seller name ---
-  const name = $(OLX_SELECTORS.sellerName).first().text().trim() || null
+  if (!ad) {
+    // Fallback: no JSON found (shouldn't happen on valid OLX pages)
+    return {}
+  }
 
-  // --- Location (city) ---
-  // Location text is typically "City, Region" or "City, District"
-  const locationText = $(OLX_SELECTORS.location).first().text().trim()
-  const city = locationText ? locationText.split(',')[0].trim() : null
+  const name: string | null = ad.user?.name ?? null
+  const city: string | null = ad.location?.cityName ?? null
 
-  // --- Description ---
-  const description = $(OLX_SELECTORS.description).first().text().trim() || null
+  // Description: strip HTML tags (OLX uses <br/> etc)
+  const rawDesc: string | null = ad.description ?? null
+  const description = rawDesc?.replace(/<[^>]+>/g, '\n').replace(/\n{3,}/g, '\n\n').trim() ?? null
 
-  // --- Categories (breadcrumbs) ---
-  // Skip the first breadcrumb (OLX root), include the rest
-  const categoryItems: string[] = []
-  $(OLX_SELECTORS.category).each((index, el) => {
-    if (index === 0) return // skip "OLX" root
-    const text = $(el).text().trim()
-    if (text) categoryItems.push(text)
-  })
+  const price: number | null = ad.price?.regularPrice?.value ?? null
+  const isBusiness: boolean = ad.isBusiness === true
 
-  // --- Price ---
-  // Price text can be: "85 zł", "1 200 zł", "85,00 zł"
-  const priceText = $(OLX_SELECTORS.price).first().text().trim()
-  const priceMin = parseOlxPrice(priceText)
-  const priceMax = priceMin // OLX shows single price — priceMin === priceMax
+  // All photos from listing
+  const photos: string[] = Array.isArray(ad.photos) ? ad.photos.filter((p: unknown) => typeof p === 'string') : []
+  const thumbnailUrl: string | null = photos[0] ?? null
 
-  // --- Seller type ---
-  // Look for "Firma" or "Business" keywords in seller badge/type area
-  const sellerTypeText = $(OLX_SELECTORS.sellerType).text()
-  const sellerType = detectSellerType(sellerTypeText)
-
-  // --- Social links ---
+  // Social links from description
   const socialLinks: Record<string, string> = {}
   if (description) {
     for (const [platform, pattern] of Object.entries(SOCIAL_LINK_PATTERNS)) {
@@ -106,52 +101,12 @@ export function parseListingDetail(html: string): Partial<RawLead> {
     name,
     city,
     description,
-    categories: categoryItems,
-    priceMin,
-    priceMax,
-    sellerType,
+    categories: [],
+    priceMin: price,
+    priceMax: price,
+    sellerType: isBusiness ? 'business' : 'private',
     socialLinks,
+    thumbnailUrl: thumbnailUrl ?? undefined,
+    photos,
   }
-}
-
-/**
- * Parse OLX price text to a number.
- * Handles formats: "85 zł", "1 200 zł", "85,00 zł", "1 200,00 zł"
- * Returns null if parsing fails.
- */
-function parseOlxPrice(priceText: string): number | null {
-  if (!priceText) return null
-
-  // Remove currency symbol and non-numeric except digits, spaces, commas, dots
-  const cleaned = priceText
-    .replace(/zł/gi, '')
-    .replace(/PLN/gi, '')
-    .trim()
-
-  // Remove spaces used as thousands separators (Polish format: "1 200")
-  const noSpaces = cleaned.replace(/\s+/g, '')
-
-  // Replace comma decimal separator with dot ("85,00" -> "85.00")
-  const normalized = noSpaces.replace(',', '.')
-
-  const parsed = parseFloat(normalized)
-  return isNaN(parsed) ? null : parsed
-}
-
-/**
- * Detect seller type from seller badge/type text.
- * OLX uses "Firma" for business sellers.
- */
-function detectSellerType(text: string): 'private' | 'business' | 'unknown' {
-  const normalized = text.toLowerCase()
-  if (normalized.includes('firma') || normalized.includes('business')) {
-    return 'business'
-  }
-  if (normalized.includes('prywatny') || normalized.includes('private')) {
-    return 'private'
-  }
-  // If seller type element is empty or has unrecognized text, default to private
-  // (most OLX handmade sellers are private individuals)
-  if (text.trim() === '') return 'unknown'
-  return 'private'
 }

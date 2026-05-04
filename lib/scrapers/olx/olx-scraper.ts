@@ -93,8 +93,11 @@ export class OlxScraper implements ScraperAdapter {
                   const detailResponse = await httpClient.get(listing.url)
                   const partial = parseListingDetail(detailResponse.body as string)
 
-                  // Phone reveal uses Playwright stealth — may return null if not available
-                  const phone = await revealPhone(listing.url)
+                  // Phone reveal is expensive (~15s per listing, launches full browser).
+                  // Skip by default — enable via config.revealPhones: true
+                  const phone = config.revealPhones
+                    ? await revealPhone(listing.url)
+                    : null
 
                   const rawLead: RawLead = {
                     sourceUrl: listing.url,
@@ -109,7 +112,9 @@ export class OlxScraper implements ScraperAdapter {
                     priceMax: partial.priceMax ?? null,
                     socialLinks: partial.socialLinks ?? {},
                     sellerType: partial.sellerType ?? 'unknown',
-                    listingCount: null, // OLX does not expose listing count per seller on listing pages
+                    listingCount: null,
+                    thumbnailUrl: (partial as { thumbnailUrl?: string }).thumbnailUrl ?? null,
+                    photos: (partial as { photos?: string[] }).photos ?? [],
                     scrapedAt: new Date().toISOString(),
                   }
 

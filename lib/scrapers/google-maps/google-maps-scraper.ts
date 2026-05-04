@@ -5,7 +5,9 @@
 // Pagination terminates on missing nextPageToken or maxPages (T-06-04).
 
 import got from 'got'
+import pLimit from 'p-limit'
 import { delayWithJitter } from '../olx/olx-scraper'
+import { extractEmailFromWebsite } from '../email-extractor'
 import type { ScraperAdapter, ScraperConfig, RawLead } from '../types'
 
 interface PlaceResult {
@@ -61,15 +63,17 @@ function placeToRawLead(place: PlaceResult): RawLead {
     sourcePlatform: 'google_maps',
     name,
     phone: place.nationalPhoneNumber ?? null,
-    email: null, // Places API never returns email
+    email: null, // Filled later by email extraction from website
     city: extractCity(place.formattedAddress),
     description,
     categories: place.types ?? [],
     priceMin: null,
     priceMax: null,
     socialLinks: place.websiteUri ? { website: place.websiteUri } : {},
-    sellerType: 'business', // Google Maps results are businesses
+    sellerType: 'business',
     listingCount: null,
+    thumbnailUrl: null,
+    photos: [],
     scrapedAt: new Date().toISOString(),
   }
 }
@@ -86,8 +90,6 @@ function placeToRawLead(place: PlaceResult): RawLead {
  */
 export class GoogleMapsScraper implements ScraperAdapter {
   name = 'google_maps'
-
-  constructor(private config: ScraperConfig) {}
 
   async run(config: ScraperConfig): Promise<RawLead[]> {
     const apiKey = process.env.GOOGLE_MAPS_API_KEY
@@ -137,6 +139,28 @@ export class GoogleMapsScraper implements ScraperAdapter {
       }
     }
 
+    // Phase 2: Extract emails from seller websites (concurrent, rate-limited)
+    const limit = pLimit(config.concurrency || 2)
+    let emailsFound = 0
+
+    await Promise.all(leads.map((lead, i) => limit(async () => {
+      const websiteUrl = lead.socialLinks?.website
+      if (!websiteUrl) return
+
+      await delayWithJitter(config.delayMs || 1000, config.jitterMs || 500)
+
+      try {
+        const email = await extractEmailFromWebsite(websiteUrl)
+        if (email) {
+          leads[i] = { ...lead, email }
+          emailsFound++
+        }
+      } catch (err) {
+        console.error(`[google-maps-scraper] email extraction failed for ${websiteUrl}:`, err)
+      }
+    })))
+
+    console.log(`[google-maps-scraper] extracted ${emailsFound} emails from ${leads.length} leads`)
     return leads
   }
 }
