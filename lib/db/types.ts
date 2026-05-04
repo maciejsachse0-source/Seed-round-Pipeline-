@@ -2,16 +2,14 @@
 // Hand-written types matching supabase/migrations/20260406000001_initial_schema.sql
 // Run `supabase gen types typescript --linked > lib/db/types.ts` after Phase 1 to regenerate from schema
 
-export type LeadStatus =
-  | 'new'
-  | 'scored'
-  | 'approved'
-  | 'contacted'
-  | 'followed_up'
-  | 'replied'
-  | 'interested'
-  | 'rejected'
-  | 'opted_out'
+// Approval status — manual evaluation by user from dashboard
+export type LeadApproval = 'new' | 'approved' | 'rejected' | 'opted_out'
+
+// Contact status — tracks email pipeline progress (mostly automatic)
+export type ContactStatus = 'none' | 'contacted' | 'followed_up' | 'replied' | 'interested'
+
+// Legacy union — kept for backward compat in imports
+export type LeadStatus = LeadApproval | ContactStatus | 'scored'
 
 export type EmailEventStatus = 'pending' | 'sent' | 'replied' | 'bounced' | 'failed'
 export type ScrapeJobStatus = 'pending' | 'running' | 'completed' | 'failed'
@@ -30,8 +28,11 @@ export interface Lead {
   categories: string[] | null
   price_range: string | null
   social_links: Record<string, string> | null
+  thumbnail_url: string | null
+  photos: string[]
   score: number | null
-  status: LeadStatus
+  status: LeadApproval
+  contact_status: ContactStatus
   lawful_basis: LawfulBasis
   opted_out: boolean
   created_at: string
@@ -88,4 +89,11 @@ export interface SequenceConfig {
   max_follow_ups: number
   interval_days: number
   updated_at: string
+}
+
+export interface SequenceStep {
+  step: number
+  template_id: string | null
+  delay_days: number
+  is_active: boolean
 }
