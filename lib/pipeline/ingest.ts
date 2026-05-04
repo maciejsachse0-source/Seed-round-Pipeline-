@@ -44,8 +44,14 @@ export async function ingestRawLeads(rawLeads: RawLead[], jobId?: string): Promi
         hasDescription: !!description,
         hasPriceRange: validated.priceMin !== null || validated.priceMax !== null,
         listingCount: validated.listingCount ?? 0,
-        categoryMatch: 1.0, // OLX categories are pre-filtered by search config
+        categoryMatch: 1.0,
         sellerType: validated.sellerType,
+        descriptionLength: description?.length ?? 0,
+        descriptionText: description ?? '',
+        priceValue: validated.priceMin ?? validated.priceMax ?? 0,
+        photoCount: validated.photos?.length ?? 0,
+        hasFullName: !!(name && name.includes(' ') && !name.includes('-')),
+        city: city ?? '',
       }
       const score = scoreLead(signals)
 
@@ -66,6 +72,8 @@ export async function ingestRawLeads(rawLeads: RawLead[], jobId?: string): Promi
         categories: validated.categories,
         price_range: priceRange,
         social_links: validated.socialLinks,
+        thumbnail_url: validated.thumbnailUrl ?? null,
+        photos: validated.photos ?? [],
         score,
         status: 'new' as const,
         lawful_basis: 'legitimate_interest' as const,

@@ -1,66 +1,113 @@
 // lib/pipeline/score.ts
 // Lead scoring algorithm producing a 0-100 integer score.
-// Input comes from Zod-validated RawLead data; output clamped to [0,100] (T-02-05).
+// Optimized for OLX handmade seller data where email/phone are typically unavailable.
 // Pure function — no side effects, no I/O.
 
-/**
- * Input signals for the lead scoring algorithm.
- * Derived from a validated RawLead before calling scoreLead().
- */
 export interface ScoringSignals {
   hasEmail: boolean
   hasPhone: boolean
   hasSocialLinks: boolean
   hasDescription: boolean
   hasPriceRange: boolean
-  listingCount: number           // 0-N; capped at 10 for scoring
-  categoryMatch: number          // 0.0 to 1.0 — how well categories match target marketplace
+  listingCount: number
+  categoryMatch: number
   sellerType: 'business' | 'private' | 'unknown'
+  // Extended signals for richer scoring
+  descriptionLength: number
+  descriptionText: string
+  priceValue: number
+  photoCount: number
+  hasFullName: boolean
+  city: string
 }
 
-/**
- * Scoring weight buckets. Values sum to 100.
- * Exported so callers can inspect the weighting logic.
- */
-export const SCORING_WEIGHTS = {
-  contactCompleteness: 30,
-  profileCompleteness: 25,
-  activity: 25,
-  categoryMatch: 15,
-  sellerType: 5,
-} as const
+// Handmade keywords — presence = strong signal this seller creates handmade goods
+const HANDMADE_KEYWORDS = [
+  'handmade', 'hand made', 'ręcznie', 'rękodzieło', 'rekodzielo',
+  'unikat', 'autorsk', 'własnoręcznie', 'rzemiosło', 'rzemioslo',
+  'unikaln', 'oryginalne', 'robione ręcznie', 'na zamówienie',
+  'personalizacja', 'szyję', 'maluję', 'tworzę', 'wyrabiam',
+]
+
+// Major Polish cities — sellers in bigger cities have larger customer base
+const MAJOR_CITIES = [
+  'warszawa', 'kraków', 'krakow', 'wrocław', 'wroclaw', 'poznań', 'poznan',
+  'gdańsk', 'gdansk', 'łódź', 'lodz', 'katowice', 'szczecin', 'lublin',
+  'bydgoszcz', 'białystok', 'bialystok', 'gdynia', 'toruń', 'torun',
+]
 
 /**
- * Scores a lead from 0 to 100 (integer) based on data completeness and quality signals.
+ * Scores a lead 0-100 based on how likely they are a quality handmade seller.
  *
- * Breakdown:
- *   Contact completeness (max 30): phone +20, email +10
- *   Profile completeness (max 25): description +10, socialLinks +8, priceRange +7
- *   Activity (max 25): min(listingCount, 10) / 10 * 25
- *   Category match (max 15): categoryMatch * 15 (rounded)
- *   Seller type (max 5):  business=5, private=3, unknown=0
+ * Weight distribution (sums to 100):
+ *   Handmade relevance:   30  (keyword matches in description)
+ *   Description quality:  20  (length, detail level)
+ *   Price signal:         15  (higher price = artisan work, not mass-produced)
+ *   Visual quality:       10  (number of photos)
+ *   Seller profile:       10  (full name, seller type)
+ *   Contact availability: 10  (email, phone, social links)
+ *   Location:              5  (major city bonus)
  */
 export function scoreLead(signals: ScoringSignals): number {
   let score = 0
+  const descLower = (signals.descriptionText || '').toLowerCase()
 
-  // Contact completeness — max 30
-  if (signals.hasPhone) score += 20
-  if (signals.hasEmail) score += 10
+  // --- Handmade relevance (max 30) ---
+  const keywordHits = HANDMADE_KEYWORDS.filter(kw => descLower.includes(kw)).length
+  if (keywordHits >= 4) score += 30
+  else if (keywordHits >= 2) score += 22
+  else if (keywordHits >= 1) score += 12
+  // 0 keywords = 0 points — strong negative signal
 
-  // Profile completeness — max 25
-  if (signals.hasDescription) score += 10
-  if (signals.hasSocialLinks) score += 8
-  if (signals.hasPriceRange) score += 7
+  // --- Description quality (max 20) ---
+  const descLen = signals.descriptionLength
+  if (descLen >= 500) score += 20
+  else if (descLen >= 200) score += 14
+  else if (descLen >= 100) score += 8
+  else if (descLen > 0) score += 3
 
-  // Activity — max 25
-  score += Math.min(signals.listingCount, 10) / 10 * 25
+  // --- Price signal (max 15) ---
+  // Higher prices suggest artisan/handmade work, not cheap mass-produced items
+  const price = signals.priceValue
+  if (price >= 200) score += 15
+  else if (price >= 100) score += 12
+  else if (price >= 50) score += 8
+  else if (price >= 20) score += 4
+  else if (price > 0) score += 1
+  // price 0 or below 20 PLN is likely mass-produced trinkets
 
-  // Category match — max 15
-  score += Math.round(signals.categoryMatch * 15)
+  // --- Visual quality (max 10) ---
+  const photos = signals.photoCount
+  if (photos >= 5) score += 10
+  else if (photos >= 3) score += 7
+  else if (photos >= 1) score += 4
+  // no photos = 0
 
-  // Seller type — max 5
+  // --- Seller profile (max 10) ---
+  if (signals.hasFullName) score += 5         // full name = more professional
   if (signals.sellerType === 'business') score += 5
-  else if (signals.sellerType === 'private') score += 3
+  else if (signals.sellerType === 'private') score += 2
+
+  // --- Contact availability (max 10) ---
+  if (signals.hasEmail) score += 4
+  if (signals.hasPhone) score += 3
+  if (signals.hasSocialLinks) score += 3
+
+  // --- Location (max 5) ---
+  const cityLower = (signals.city || '').toLowerCase()
+  if (MAJOR_CITIES.some(c => cityLower.includes(c))) score += 5
+  else if (cityLower.length > 0) score += 2
 
   return Math.min(100, Math.round(score))
 }
+
+// Legacy export for backward compat
+export const SCORING_WEIGHTS = {
+  handmadeRelevance: 30,
+  descriptionQuality: 20,
+  priceSignal: 15,
+  visualQuality: 10,
+  sellerProfile: 10,
+  contactAvailability: 10,
+  location: 5,
+} as const

@@ -1,7 +1,7 @@
 // lib/db/suppression.ts
 // MAIL-08: suppression list must be checked before every send
 // MAIL-07: addToSuppressionList is called when opt-out link is clicked
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 /**
  * Check if an email address is on the suppression list.
@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/server'
  * NEVER skip this check: a lead can be re-scraped with a new UUID after opting out.
  */
 export async function isEmailSuppressed(email: string): Promise<boolean> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const { data } = await supabase
     .from('suppression_list')
     .select('email')
@@ -30,7 +30,7 @@ export async function addToSuppressionList(
   email: string,
   reason: 'opt_out' | 'bounce_hard' | 'spam_complaint' | 'manual'
 ): Promise<void> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const normalizedEmail = email.toLowerCase()
 
   await supabase.from('suppression_list').upsert({

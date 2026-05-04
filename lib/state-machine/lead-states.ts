@@ -1,7 +1,9 @@
 // lib/state-machine/lead-states.ts
-// INFR-02: Lead state machine with validated transitions
-// Every status change in the codebase MUST call assertTransition() before writing to DB
+// Two-axis lead state machine:
+//   1. Approval (manual): new → approved / rejected / opted_out
+//   2. Contact status (auto + manual): none → contacted → followed_up → replied → interested
 
+// --- Legacy enum kept for backward-compat in workers/email code ---
 export enum LeadStatus {
   NEW = 'new',
   SCORED = 'scored',
@@ -14,34 +16,62 @@ export enum LeadStatus {
   OPTED_OUT = 'opted_out',
 }
 
-// Valid transitions: key = current state, value = allowed next states
-// opted_out is TERMINAL — zero transitions out (GDPR compliance)
-// rejected is TERMINAL — zero transitions out
-export const VALID_TRANSITIONS: Record<LeadStatus, LeadStatus[]> = {
-  [LeadStatus.NEW]:         [LeadStatus.SCORED, LeadStatus.OPTED_OUT],
-  [LeadStatus.SCORED]:      [LeadStatus.APPROVED, LeadStatus.REJECTED, LeadStatus.OPTED_OUT],
-  [LeadStatus.APPROVED]:    [LeadStatus.CONTACTED, LeadStatus.OPTED_OUT],
-  [LeadStatus.CONTACTED]:   [LeadStatus.FOLLOWED_UP, LeadStatus.REPLIED, LeadStatus.OPTED_OUT],
-  [LeadStatus.FOLLOWED_UP]: [LeadStatus.FOLLOWED_UP, LeadStatus.REPLIED, LeadStatus.OPTED_OUT],
-  [LeadStatus.REPLIED]:     [LeadStatus.INTERESTED, LeadStatus.REJECTED, LeadStatus.OPTED_OUT],
-  [LeadStatus.INTERESTED]:  [LeadStatus.OPTED_OUT],
-  [LeadStatus.REJECTED]:    [],
-  [LeadStatus.OPTED_OUT]:   [],
+// --- Approval axis (column: status) ---
+export type Approval = 'new' | 'approved' | 'rejected' | 'opted_out'
+
+export const APPROVAL_TRANSITIONS: Record<Approval, Approval[]> = {
+  new:       ['approved', 'rejected', 'opted_out'],
+  approved:  ['rejected', 'opted_out'],
+  rejected:  [],
+  opted_out: [],
 }
 
-/**
- * Check whether a status transition is valid without throwing.
- */
+export function canTransitionApproval(from: Approval, to: Approval): boolean {
+  return APPROVAL_TRANSITIONS[from]?.includes(to) ?? false
+}
+
+// --- Contact axis (column: contact_status) ---
+export type ContactState = 'none' | 'contacted' | 'followed_up' | 'replied' | 'interested'
+
+export const CONTACT_TRANSITIONS: Record<ContactState, ContactState[]> = {
+  none:        ['contacted'],
+  contacted:   ['followed_up', 'replied'],
+  followed_up: ['followed_up', 'replied'],
+  replied:     ['interested'],
+  interested:  [],
+}
+
+// Manual transitions shown in dashboard dropdown (hides auto-only like followed_up)
+const CONTACT_AUTO_ONLY: ContactState[] = ['followed_up']
+
+export function getManualContactTransitions(from: ContactState): ContactState[] {
+  return CONTACT_TRANSITIONS[from]?.filter(s => !CONTACT_AUTO_ONLY.includes(s)) ?? []
+}
+
+export function canTransitionContact(from: ContactState, to: ContactState): boolean {
+  return CONTACT_TRANSITIONS[from]?.includes(to) ?? false
+}
+
+// --- Legacy helpers (used by email workers) ---
+export const VALID_TRANSITIONS = {
+  ...Object.fromEntries(
+    Object.values(LeadStatus).map(s => [s, [] as LeadStatus[]])
+  ),
+} as Record<LeadStatus, LeadStatus[]>
+
 export function canTransition(from: LeadStatus, to: LeadStatus): boolean {
-  return VALID_TRANSITIONS[from].includes(to)
+  // Delegate to the appropriate axis
+  if (['new', 'approved', 'rejected', 'opted_out'].includes(from) &&
+      ['new', 'approved', 'rejected', 'opted_out'].includes(to)) {
+    return canTransitionApproval(from as Approval, to as Approval)
+  }
+  if (['none', 'contacted', 'followed_up', 'replied', 'interested'].includes(from) &&
+      ['none', 'contacted', 'followed_up', 'replied', 'interested'].includes(to)) {
+    return canTransitionContact(from as ContactState, to as ContactState)
+  }
+  return false
 }
 
-/**
- * Assert a status transition is valid, throwing if not.
- * Call this before every lead.status update in the database.
- *
- * @throws Error with message "Invalid lead transition: {from} -> {to}"
- */
 export function assertTransition(from: LeadStatus, to: LeadStatus): void {
   if (!canTransition(from, to)) {
     throw new Error(`Invalid lead transition: ${from} -> ${to}`)

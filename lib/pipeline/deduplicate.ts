@@ -3,7 +3,7 @@
 // Three-tier strategy: source_url (primary) -> email -> phone check-then-insert.
 // Security: parameterized queries via Supabase client; unique indexes enforce at DB level (T-02-13).
 
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 /**
  * Upserts a lead record into the Supabase leads table with deduplication.
@@ -19,27 +19,26 @@ import { createClient } from '@/lib/supabase/server'
  * @throws Error if Supabase returns a query error
  */
 export async function upsertLead(lead: Record<string, unknown>): Promise<'created' | 'duplicate'> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
-  // Tier 1: source_url deduplication (same OLX listing URL)
+  // Tier 1: source_url deduplication (same listing URL)
   if (lead.source_url) {
-    const { data, error } = await supabase
+    const { data: existing } = await supabase
       .from('leads')
-      .upsert(lead, { onConflict: 'source_url', ignoreDuplicates: true })
       .select('id')
-    if (error) throw error
-    // ignoreDuplicates: true returns empty array when conflict detected
-    return data && data.length > 0 ? 'created' : 'duplicate'
+      .eq('source_url', lead.source_url as string)
+      .maybeSingle()
+    if (existing) return 'duplicate'
   }
 
   // Tier 2: email deduplication
   if (lead.email) {
-    const { data, error } = await supabase
+    const { data: existing } = await supabase
       .from('leads')
-      .upsert(lead, { onConflict: 'email', ignoreDuplicates: true })
       .select('id')
-    if (error) throw error
-    return data && data.length > 0 ? 'created' : 'duplicate'
+      .eq('email', lead.email as string)
+      .maybeSingle()
+    if (existing) return 'duplicate'
   }
 
   // Tier 3: phone check-then-insert (unique index catches races at DB level)
