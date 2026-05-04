@@ -15,10 +15,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.86.1",
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.101.1",
     "@tanstack/react-table": "^8.21.3",
+    "apify-client": "^2.22.3",
     "cheerio": "^1.2.0",
     "get-shit-done-cc": "^1.32.0",
     "googleapis": "^171.4.0",
