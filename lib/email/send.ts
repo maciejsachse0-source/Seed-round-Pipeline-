@@ -13,8 +13,9 @@ import { canSendToday } from '@/lib/email/rate-limiter'
 import { generateUnsubscribeToken } from '@/lib/email/unsubscribe-token'
 import { isEmailSuppressed, addToSuppressionList } from '@/lib/db/suppression'
 import { substituteTokens } from '@/lib/queries/templates'
+import { buildHtmlEmail } from '@/lib/email/html-layout'
 import { assertTransition, LeadStatus } from '@/lib/state-machine/lead-states'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import type { Lead, EmailTemplate } from '@/lib/db/types'
 
 export interface SendColdEmailResult {
@@ -78,6 +79,7 @@ export async function sendColdEmail(
     name: lead.name ?? '',
     city: lead.city ?? '',
     category: lead.categories?.[0] ?? '',
+    website: lead.source_url ?? '',
   }
   const substitutedSubject = substituteTokens(template.subject, tokenData)
   const substitutedBody = substituteTokens(template.body, tokenData)
@@ -92,12 +94,17 @@ export async function sendColdEmail(
     `${appUrl}/api/unsubscribe?email=${encodeURIComponent(email)}&lead=${lead.id}&token=${unsubToken}`
   const pixelUrl = `${appUrl}/api/track/open/${eventId}`
 
-  // --- Inject pixel and opt-out link into HTML body ---
-  const trackingPixel = `<img src="${pixelUrl}" width="1" height="1" alt="" style="display:none;" />`
-  const optOutLink = `<p><a href="${unsubUrl}">Nie chcesz otrzymywac wiadomosci? Kliknij tutaj</a></p>`
-  const finalBody = `${substitutedBody}${trackingPixel}${optOutLink}`
+  // --- Build HTML email with professional layout ---
+  const htmlEmail = buildHtmlEmail(substitutedBody)
 
-  const supabase = await createClient()
+  // --- Inject tracking pixel and opt-out link into layout placeholders ---
+  const trackingPixel = `<img src="${pixelUrl}" width="1" height="1" alt="" style="display:none;" />`
+  const optOutLink = `<a href="${unsubUrl}" style="color: #9ca3af; text-decoration: underline;">Nie chcesz otrzymywać wiadomości? Kliknij tutaj</a>`
+  const finalBody = htmlEmail
+    .replace('<!--TRACKING_PIXEL-->', trackingPixel)
+    .replace('<!--UNSUBSCRIBE_LINK-->', optOutLink)
+
+  const supabase = createServiceClient()
 
   // --- Send via transporter ---
   try {
@@ -156,12 +163,14 @@ export async function sendColdEmail(
       start_history_id: startHistoryId,
     })
 
-    // --- Transition lead status ---
-    // assertTransition will throw if the current status doesn't allow this transition
-    assertTransition(lead.status as LeadStatus, targetStatus)
+    // --- Transition contact status ---
+    // Email pipeline updates contact_status, not approval status
+    const contactTarget = targetStatus === LeadStatus.CONTACTED ? 'contacted'
+      : targetStatus === LeadStatus.FOLLOWED_UP ? 'followed_up'
+      : 'contacted'
     await supabase
       .from('leads')
-      .update({ status: targetStatus, updated_at: new Date().toISOString() })
+      .update({ contact_status: contactTarget, updated_at: new Date().toISOString() })
       .eq('id', lead.id)
 
     return { success: true, emailEventId: eventId, gmailMessageId: gmailMessageId ?? undefined }

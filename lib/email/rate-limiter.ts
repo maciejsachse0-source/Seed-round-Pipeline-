@@ -1,7 +1,7 @@
 // lib/email/rate-limiter.ts
 // MAIL-06: Daily cap and inter-send spacing constants
 // DAILY_CAP and SEND_SPACING_MS enforced server-side — never configurable from client
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 /** Maximum emails to send per calendar day (UTC) */
 export const DAILY_CAP = 45
@@ -14,7 +14,7 @@ export const SEND_SPACING_MS = 90_000
  * Used by canSendToday() and the email-send worker to enforce the daily cap.
  */
 export async function getDailyCount(): Promise<number> {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const today = new Date().toISOString().slice(0, 10) // 'YYYY-MM-DD'
   const { count, error } = await supabase
     .from('email_events')
