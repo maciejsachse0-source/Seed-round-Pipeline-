@@ -5,11 +5,13 @@
 import type { ScraperAdapter, ScraperConfig } from './types'
 import { OlxScraper } from './olx/olx-scraper'
 import { GoogleMapsScraper } from './google-maps/google-maps-scraper'
+import { InstagramScraper } from './instagram/instagram-scraper'
 
 // Map of platform name -> constructor for each registered scraper adapter
 const SCRAPERS: Record<string, new (config: ScraperConfig) => ScraperAdapter> = {
   olx: OlxScraper,
   google_maps: GoogleMapsScraper,
+  instagram: InstagramScraper,
 }
 
 /**
