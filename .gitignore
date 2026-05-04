@@ -43,3 +43,6 @@ supabase/.temp
 # Claude Code local config
 .claude/settings.local.json
 .claude/worktrees/
+
+# GSD framework (vendored CLI installation, not project source)
+.gsd/
