@@ -11,8 +11,9 @@ import {
 import { useQueryState, parseAsString } from 'nuqs'
 import Link from 'next/link'
 import type { Lead } from '@/lib/db/types'
-import { LeadStatusSelect } from './LeadStatusSelect'
-import type { LeadStatus } from '@/lib/state-machine/lead-states'
+import { proxyImage } from '@/lib/image-proxy'
+import { ApprovalSelect, ContactStatusSelect } from './LeadStatusSelect'
+import type { Approval, ContactState } from '@/lib/state-machine/lead-states'
 
 interface LeadsTableProps {
   leads: Lead[]
@@ -85,23 +86,40 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
 
   const columns: ColumnDef<Lead>[] = [
     {
-      accessorKey: 'name',
-      header: () => <SortHeader col="name" label="Nazwa" />,
-      cell: ({ row }) => (
-        <Link
-          href={`/dashboard/leads/${row.original.id}`}
-          className="text-gray-900 hover:text-gray-600 font-medium transition-colors"
-        >
-          {row.original.name ?? <span className="text-gray-400 italic">Bez nazwy</span>}
-        </Link>
-      ),
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
-      cell: ({ row }) => (
-        <span className="text-gray-700">{row.original.email ?? '—'}</span>
-      ),
+      id: 'lead',
+      header: () => <SortHeader col="name" label="Sprzedawca" />,
+      cell: ({ row }) => {
+        const lead = row.original
+        const desc = lead.business_description
+        const shortDesc = desc && desc.length > 80 ? desc.slice(0, 80) + '…' : desc
+        return (
+          <Link
+            href={`/dashboard/leads/${lead.id}`}
+            className="flex items-center gap-3 group"
+          >
+            {lead.thumbnail_url ? (
+              <img
+                src={proxyImage(lead.thumbnail_url)}
+                alt=""
+                className="w-10 h-10 rounded-lg object-cover flex-shrink-0 bg-gray-100"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-gray-300 text-lg">{'\u25A6'}</span>
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors truncate">
+                {lead.name ?? <span className="text-gray-400 italic">Bez nazwy</span>}
+              </p>
+              {shortDesc && (
+                <p className="text-xs text-gray-500 truncate mt-0.5">{shortDesc}</p>
+              )}
+            </div>
+          </Link>
+        )
+      },
     },
     {
       accessorKey: 'city',
@@ -121,11 +139,21 @@ export function LeadsTable({ leads, rowCount }: LeadsTableProps) {
     },
     {
       accessorKey: 'status',
-      header: () => <SortHeader col="status" label="Status" />,
+      header: () => <SortHeader col="status" label="Ocena" />,
       cell: ({ row }) => (
-        <LeadStatusSelect
+        <ApprovalSelect
           leadId={row.original.id}
-          currentStatus={row.original.status as LeadStatus}
+          current={row.original.status as Approval}
+        />
+      ),
+    },
+    {
+      accessorKey: 'contact_status',
+      header: () => <SortHeader col="contact_status" label="Kontakt" />,
+      cell: ({ row }) => (
+        <ContactStatusSelect
+          leadId={row.original.id}
+          current={(row.original as Lead & { contact_status: string }).contact_status as ContactState ?? 'none'}
         />
       ),
     },

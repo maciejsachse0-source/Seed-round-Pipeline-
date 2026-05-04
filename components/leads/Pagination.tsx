@@ -9,7 +9,7 @@ interface PaginationProps {
 }
 
 export function Pagination({ currentPage, totalPages }: PaginationProps) {
-  const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1).withOptions({ shallow: false }))
 
   if (totalPages <= 1) return null
 

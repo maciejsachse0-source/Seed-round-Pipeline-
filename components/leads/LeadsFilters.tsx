@@ -1,28 +1,30 @@
 'use client'
 // components/leads/LeadsFilters.tsx
-// Filter bar for leads table — status dropdown + search input
-// Uses nuqs for URL-synced state (Pitfall 2: NuqsAdapter already in app/layout.tsx)
+// Filter bar — approval status dropdown + contact status + search input
 import { useRef } from 'react'
 import { useQueryState, parseAsString, parseAsInteger } from 'nuqs'
-import { LeadStatus } from '@/lib/state-machine/lead-states'
 
-const STATUS_LABELS: Record<string, string> = {
-  '': 'Wszystkie statusy',
-  [LeadStatus.NEW]: 'Nowy',
-  [LeadStatus.SCORED]: 'Oceniony',
-  [LeadStatus.APPROVED]: 'Zatwierdzony',
-  [LeadStatus.CONTACTED]: 'Skontaktowany',
-  [LeadStatus.FOLLOWED_UP]: 'Follow-up wysłany',
-  [LeadStatus.REPLIED]: 'Odpowiedział',
-  [LeadStatus.INTERESTED]: 'Zainteresowany',
-  [LeadStatus.REJECTED]: 'Odrzucony',
-  [LeadStatus.OPTED_OUT]: 'Wypisany',
+const APPROVAL_LABELS: Record<string, string> = {
+  '': 'Wszystkie',
+  new: 'Nowy',
+  approved: 'Zatwierdzony',
+  rejected: 'Odrzucony',
+  opted_out: 'Wypisany',
+}
+
+const CONTACT_LABELS: Record<string, string> = {
+  '': 'Dowolny kontakt',
+  none: 'Brak kontaktu',
+  contacted: 'Email wysłany',
+  followed_up: 'Follow-up',
+  replied: 'Odpowiedział',
+  interested: 'Zainteresowany',
 }
 
 export function LeadsFilters() {
-  const [status, setStatus] = useQueryState('status', parseAsString.withDefault(''))
-  const [search, setSearch] = useQueryState('search', parseAsString.withDefault(''))
-  const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1))
+  const [status, setStatus] = useQueryState('status', parseAsString.withDefault('').withOptions({ shallow: false }))
+  const [search, setSearch] = useQueryState('search', parseAsString.withDefault('').withOptions({ shallow: false }))
+  const [, setPage] = useQueryState('page', parseAsInteger.withDefault(1).withOptions({ shallow: false }))
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -46,10 +48,8 @@ export function LeadsFilters() {
         onChange={handleStatusChange}
         className="input-field w-auto"
       >
-        {Object.entries(STATUS_LABELS).map(([value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
+        {Object.entries(APPROVAL_LABELS).map(([value, label]) => (
+          <option key={value} value={value}>{label}</option>
         ))}
       </select>
 

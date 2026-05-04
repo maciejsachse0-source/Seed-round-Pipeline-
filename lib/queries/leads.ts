@@ -4,7 +4,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Lead, EmailEvent } from '@/lib/db/types'
 
-export const SORTABLE_COLUMNS = ['created_at', 'score', 'name', 'city', 'status'] as const
+export const SORTABLE_COLUMNS = ['created_at', 'score', 'name', 'city', 'status', 'contact_status'] as const
 export type SortableColumn = typeof SORTABLE_COLUMNS[number]
 
 export const PAGE_SIZE = 25
@@ -30,7 +30,7 @@ export async function fetchLeads(params: {
   const supabase = await createClient()
   let query = supabase
     .from('leads')
-    .select('id, name, email, city, source_platform, status, score, created_at', { count: 'exact' })
+    .select('*', { count: 'exact' })
 
   if (params.status && params.status.length > 0) {
     query = query.eq('status', params.status) as typeof query

@@ -4,8 +4,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { fetchLeadById, fetchEmailHistory } from '@/lib/queries/leads'
-import { LeadStatusSelect } from '@/components/leads/LeadStatusSelect'
-import type { LeadStatus } from '@/lib/state-machine/lead-states'
+import { ApprovalSelect, ContactStatusSelect } from '@/components/leads/LeadStatusSelect'
+import { LeadProgress } from '@/components/leads/LeadProgress'
+import type { Approval, ContactState } from '@/lib/state-machine/lead-states'
 import type { EmailEventStatus } from '@/lib/db/types'
 
 interface LeadDetailPageProps {
@@ -60,16 +61,21 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
         &larr; Powrót do listy
       </Link>
 
+      {/* Pipeline progress */}
+      <div className="mb-6">
+        <LeadProgress lead={lead as any} emailHistory={emailHistory} />
+      </div>
+
       {/* Lead header */}
       <div className="bg-white rounded border shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-xl font-bold text-gray-900">
             {lead.name ?? <span className="text-gray-400 font-normal italic">Bez nazwy</span>}
           </h1>
-          <LeadStatusSelect
-            leadId={lead.id}
-            currentStatus={lead.status as LeadStatus}
-          />
+          <div className="flex items-center gap-2">
+            <ApprovalSelect leadId={lead.id} current={lead.status as Approval} />
+            <ContactStatusSelect leadId={lead.id} current={lead.contact_status as ContactState} />
+          </div>
         </div>
 
         {/* Info grid */}
