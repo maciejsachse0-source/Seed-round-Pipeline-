@@ -8,7 +8,7 @@
 import { getBoss } from '@/lib/queue/boss'
 import { sendColdEmail } from '@/lib/email/send'
 import { scheduleFollowUp, getSequenceConfigForScheduler } from '@/lib/email/follow-up'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { LeadStatus } from '@/lib/state-machine/lead-states'
 import type { Lead, EmailTemplate } from '@/lib/db/types'
 
@@ -17,11 +17,8 @@ interface FollowUpJobData {
   sequenceStep: number // 1-based (1 = first follow-up, 2 = second follow-up)
 }
 
-/** Lead statuses that indicate the sequence is still active and a follow-up should be sent. */
-const ACTIVE_SEQUENCE_STATUSES: LeadStatus[] = [
-  LeadStatus.CONTACTED,
-  LeadStatus.FOLLOWED_UP,
-]
+/** Contact statuses that indicate the sequence is still active and a follow-up should be sent. */
+const ACTIVE_CONTACT_STATUSES = ['contacted', 'followed_up'] as const
 
 /**
  * Registers the pg-boss worker for 'follow-up-send' jobs.
@@ -40,7 +37,7 @@ export async function registerFollowUpWorker(): Promise<void> {
 
   await boss.work('follow-up-send', { localConcurrency: 1 }, async ([job]) => {
     const { leadId, sequenceStep } = job.data as FollowUpJobData
-    const supabase = await createClient()
+    const supabase = createServiceClient()
 
     // --- Fetch lead and check status ---
     const { data: leadData } = await supabase
@@ -55,10 +52,17 @@ export async function registerFollowUpWorker(): Promise<void> {
       return
     }
 
-    if (!ACTIVE_SEQUENCE_STATUSES.includes(lead.status as LeadStatus)) {
+    const contactStatus = (lead as Lead & { contact_status: string }).contact_status ?? 'none'
+    if (!(ACTIVE_CONTACT_STATUSES as readonly string[]).includes(contactStatus)) {
       console.log(
-        `[follow-up-worker] lead ${leadId} status='${lead.status}' not in active sequence — stopping`
+        `[follow-up-worker] lead ${leadId} contact_status='${contactStatus}' not in active sequence — stopping`
       )
+      return
+    }
+
+    // Also skip if approval is rejected or opted_out
+    if (lead.status === 'rejected' || lead.status === 'opted_out') {
+      console.log(`[follow-up-worker] lead ${leadId} approval='${lead.status}' — stopping`)
       return
     }
 

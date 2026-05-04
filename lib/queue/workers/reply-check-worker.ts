@@ -7,7 +7,7 @@
 import { getBoss } from '@/lib/queue/boss'
 import { pollForReplies } from '@/lib/email/reply-poller'
 import { assertTransition, LeadStatus } from '@/lib/state-machine/lead-states'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 /**
  * Registers the pg-boss cron worker for reply detection.
@@ -30,7 +30,7 @@ export async function registerReplyCheckWorker(): Promise<void> {
 
   // Register the worker handler
   await boss.work('email-reply-check', async () => {
-    const supabase = await createClient()
+    const supabase = createServiceClient()
 
     // 1. Find most recent email_event that has a start_history_id (polling baseline)
     const { data: baselineEvent } = await supabase
@@ -81,22 +81,14 @@ export async function registerReplyCheckWorker(): Promise<void> {
         .single()
 
       if (lead) {
-        try {
-          assertTransition(lead.status as LeadStatus, LeadStatus.REPLIED)
-          await supabase
-            .from('leads')
-            .update({
-              status: 'replied',
-              updated_at: new Date().toISOString(),
-            })
-            .eq('id', lead.id)
-        } catch (transitionErr) {
-          // Log but don't crash — lead may have already moved to a terminal state
-          console.warn(
-            `[reply-check-worker] could not transition lead ${lead.id} (${lead.status}) to replied:`,
-            transitionErr
-          )
-        }
+        // Update contact_status to 'replied' (approval status stays unchanged)
+        await supabase
+          .from('leads')
+          .update({
+            contact_status: 'replied',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', lead.id)
       }
 
       repliesFound++

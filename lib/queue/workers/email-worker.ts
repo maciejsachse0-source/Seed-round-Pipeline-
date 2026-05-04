@@ -8,7 +8,7 @@
 import { getBoss } from '@/lib/queue/boss'
 import { sendColdEmail } from '@/lib/email/send'
 import { SEND_SPACING_MS } from '@/lib/email/rate-limiter'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import type { Lead, EmailTemplate } from '@/lib/db/types'
 
 interface EmailSendJobData {
@@ -34,7 +34,7 @@ export async function registerEmailWorker(): Promise<void> {
 
   await boss.work('email-send', { localConcurrency: 1 }, async ([job]) => {
     const { leadId, templateId } = job.data as EmailSendJobData
-    const supabase = await createClient()
+    const supabase = createServiceClient()
 
     // Fetch lead
     const { data: leadData } = await supabase
