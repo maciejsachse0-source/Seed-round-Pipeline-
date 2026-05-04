@@ -50,6 +50,13 @@ export async function POST(request: Request) {
       )
     }
 
+    if (!config.keywords?.length && platform === 'instagram') {
+      return NextResponse.json(
+        { error: 'keywords (hashtags) is required for Instagram scraping' },
+        { status: 400 }
+      )
+    }
+
     const supabase = await createClient()
     const boss = await getBoss()
 

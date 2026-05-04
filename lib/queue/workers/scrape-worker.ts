@@ -7,7 +7,7 @@
 import { getBoss } from '@/lib/queue/boss'
 import { createScraper, getAvailableScrapers } from '@/lib/scrapers/index'
 import { ingestRawLeads } from '@/lib/pipeline/ingest'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import type { ScraperConfig } from '@/lib/scrapers/types'
 
 /**
@@ -26,7 +26,7 @@ async function registerScrapeWorkerForPlatform(platform: string): Promise<void> 
 
   await boss.work(`scrape-${platform}`, async ([job]) => {
     const config = job.data as ScraperConfig
-    const supabase = await createClient()
+    const supabase = createServiceClient()
 
     // Mark job as running with start timestamp
     await supabase
