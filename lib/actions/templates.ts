@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase/server'
 const TemplateSchema = z.object({
   name: z.string().min(1).max(100),
   subject: z.string().min(1).max(200),
-  body: z.string().min(1).max(5000),
+  body: z.string().min(1).max(10000),
   sequence_position: z.number().int().min(0),
 })
 
