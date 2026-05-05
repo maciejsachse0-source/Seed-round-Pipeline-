@@ -85,6 +85,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ jobId: job.id }, { status: 201 })
   } catch (err) {
     console.error('[api/scrape] Error dispatching scrape job:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    const body: { error: string; detail?: string } = { error: 'Internal server error' }
+    if (process.env.NODE_ENV !== 'production') {
+      body.detail = err instanceof Error ? `${err.name}: ${err.message}` : String(err)
+    }
+    return NextResponse.json(body, { status: 500 })
   }
 }
